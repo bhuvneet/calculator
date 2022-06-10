@@ -1,1 +1,4 @@
-index.js
+body
+{
+    display: grid;
+}
