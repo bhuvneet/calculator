@@ -2,7 +2,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Calculator</title>   
-        <script src="index.js" defer></script>
+        <!--<script src="index.js" defer></script>-->
+        <link rel="stylesheet" href="index.css">
     </head>
 
     <body>
@@ -17,10 +18,10 @@
             <tr>
                 <td>
                     <div id="row-2">
-                        <button class="undo">undo</button>
-                        <button class="clear">clear</button>
-                        <button class="mod">%</button>
-                        <button class="divide">/</button>
+                        <button id="undo">undo</button>
+                        <button id="clear">clear</button>
+                        <button id="mod">%</button>
+                        <button id="divide">/</button>
                     </div>
                 </td>
             </tr>
@@ -28,10 +29,10 @@
             <tr>
                 <td>
                     <div id="row-3">
-                        <button class="seven">7</button>
-                        <button class="eight">8</button>
-                        <button class="nine">9</button>
-                        <button class="multiply">x</button>
+                        <button class="number" id="seven">7</button>
+                        <button class="number" id="eight">8</button>
+                        <button class="number" id="nine">9</button>
+                        <button id="multiply">x</button>
                     </div>
                 </td>
             </tr>
@@ -39,10 +40,10 @@
             <tr>
                 <td>
                     <div id="row-4">
-                        <button class="four">4</button>
-                        <button class="five">5</button>
-                        <button class="six">6</button>
-                        <button class="subtract">-</button>
+                        <button class="number" id="four">4</button>
+                        <button class="number" id="five">5</button>
+                        <button class="number" id="six">6</button>
+                        <button id="subtract">-</button>
                     </div>
                 </td>
             </tr>
@@ -50,10 +51,10 @@
             <tr>
                 <td>
                     <div id="row-5">
-                        <button class="one">1</button>
-                        <button class="two">2</button>
-                        <button class="three">3</button>
-                        <button class="add">+</button>
+                        <button class="number" id="one">1</button>
+                        <button class="number" id="two">2</button>
+                        <button class="number" id="three">3</button>
+                        <button id="add">+</button>
                     </div>
                 </td>
             </tr>
@@ -61,7 +62,7 @@
             <tr>
                 <td>
                     <div id="row-6">
-                        <button class="zero">0</button>
+                        <button class="number" id="zero">0</button>
                         <button id="decimal">.</button>
                         <button id="equals">=</button>
                     </div>
