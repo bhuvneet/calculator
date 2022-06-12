@@ -109,7 +109,14 @@ function mod (prevNum, currNum)
     updateDisplay(result);
 };
 
+let display = document.getElementById("display");
 function updateDisplay (result)
 {
     document.getElementById("display").value = result;
 }
+
+let undo = document.getElementById("undo");
+undo.addEventListener("click", () =>
+{
+    display.value = '';
+})
