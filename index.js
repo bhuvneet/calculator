@@ -1,4 +1,5 @@
 // add event handler to the number buttons clicked.
+let result = -1
 let prevNum = -1;
 let currNum = -1;
 let num = document.getElementsByClassName("number");
@@ -7,10 +8,21 @@ for (let i = 0; i < num.length; i++)
     num[i].addEventListener("click", () =>
 {
     // store previous and new number clicked in variables
-    prevNum = currNum;
-    currNum = num[i].textContent;
-    console.log('prev num= ' + prevNum);
-    console.log('curr Num= ' + currNum);
+    if (result === -1)
+    {
+        prevNum = currNum;
+        currNum = num[i].textContent;
+        console.log('prev num= ' + prevNum);
+        console.log('curr Num= ' + currNum);
+    }
+    else
+    {
+        prevNum = result;
+        currNum = num[i].textContent;
+        console.log('prev num= ' + prevNum);
+        console.log('curr Num= ' + currNum);
+    }
+
 })}
 
 
@@ -51,7 +63,7 @@ function operate ()
         {
             subtract(prevNum, currNum);
         }
-        else if (whichOperation === "*")
+        else if (whichOperation === "x")
         {
             multiply(prevNum, currNum);
         }
@@ -69,25 +81,35 @@ function operate ()
 // operate on nums
 function add (prevNum, currNum)
 {
-    return (prevNum + currNum);
+    result = +prevNum + +currNum;
+    updateDisplay(result);
 };
 
 function subtract (prevNum, currNum)
 {
-    return (prevNum - currNum);
+    result = +prevNum - +currNum;
+    updateDisplay(result);
 };
 
 function divide (prevNum, currNum)
 {
-    return (prevNum / currNum);
+    result = +prevNum / +currNum;
+    updateDisplay(result);
 };
 
 function multiply (prevNum, currNum)
 {
-    return (prevNum * currNum);
+    result = +prevNum * +currNum;
+    updateDisplay(result);
 };
 
 function mod (prevNum, currNum)
 {
-    return (prevNum % currNum);
+    result = +prevNum % +currNum;
+    updateDisplay(result);
 };
+
+function updateDisplay (result)
+{
+    document.getElementById("display").value = result;
+}
