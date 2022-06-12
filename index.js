@@ -1,90 +1,93 @@
-let addNums = document.getElementById("add");
-addNums.addEventListener("click", operate());
-
-let subtractNums = document.getElementById("subtract");
-subtractNums.addEventListener("click", operate());
-
-let divideNums = document.getElementById("divide");
-divideNums.addEventListener("click", operate());
-
-let multiplyNums = document.getElementById("multiply");
-multiplyNums.addEventListener("click", operate());
-
-let modNums = document.getElementById("mod");
-modNums.addEventListener("click", operate());
-
-let equalsNums = document.getElementById("equals");
-equalsNums.addEventListener("click", operate());
-
+// add event handler to the number buttons clicked.
+let prevNum = -1;
+let currNum = -1;
 let num = document.getElementsByClassName("number");
 for (let i = 0; i < num.length; i++)
 {
-    num[i].addEventListener("click", operator(num[i]));
-}
-
-function whichNum (num)
+    num[i].addEventListener("click", () =>
 {
-    console.log(num.textContent);
-}
+    // store previous and new number clicked in variables
+    prevNum = currNum;
+    currNum = num[i].textContent;
+    console.log('prev num= ' + prevNum);
+    console.log('curr Num= ' + currNum);
+})}
 
-function add (num1, num2)
+
+// add event handler to operation buttons clicked
+let whichOperation = 0;
+let operation = document.getElementsByClassName("operation");
+for (let i = 0; i < operation.length; i++)
 {
-    return num1 + num2;
-};
-
-function subtract (num1, num2)
+    operation[i].addEventListener("click", () =>
 {
-    return num1 - num2;
-};
+    whichOperation = operation[i].textContent;
+    console.log(whichOperation);
+})}
 
-function divide (num1, num2)
-{
-    return num1 / num2;
-};
+// once equals button is clicked, invoke operate()
+let equals = document.getElementById("equals");
+equals.addEventListener("click", operate); 
 
-function multiply (num1, num2)
-{
-    return num1 * num2;
-};
-
-function mod (num1, num2)
-{
-    return num1 % num2;
-};
-
-// check if button clicked is a number
-function operator (num1)
-{
-    if (typeof num1 === 'number')
-    {
-        operate(num1);
-    }
-}
-
+// store 1st num when user presses operator
+// save which operation
 // operate on the numbers
-function operate (num1, num2, whichOperation)
+function operate ()
 {
+    //console.log(prevNum, currNum, whichOperation);
     //let num1 = temp;    // store value of argument in a temp variable
     //let num2 = temp;    // assign the value of temp to a new variable
-
-    if (whichOperation === "add")
+    if (prevNum === -1 && currNum === -1 && whichOperation === 0)
     {
-        add(num1, num2);
+        return;
     }
-    else if (whichOperation === "subtract")
+    else
     {
-        subtract(num1, num2);
-    }
-    else if (whichOperation === "multiply")
-    {
-        multiply(num1, num2);
-    }
-    else if (whichOperation === "divide")
-    {
-        divide(num1, num2);
-    }
-    else if (whichOperation === "mod")
-    {
-        mod(num1, num2);
+        if (whichOperation === "+")
+        {
+            add(prevNum, currNum);
+        }
+        else if (whichOperation === "-")
+        {
+            subtract(prevNum, currNum);
+        }
+        else if (whichOperation === "*")
+        {
+            multiply(prevNum, currNum);
+        }
+        else if (whichOperation === "/")
+        {
+            divide(prevNum, currNum);
+        }
+        else if (whichOperation === "%")
+        {
+            mod(prevNum, currNum);
+        }
     }
 }
+
+// operate on nums
+function add (prevNum, currNum)
+{
+    return (prevNum + currNum);
+};
+
+function subtract (prevNum, currNum)
+{
+    return (prevNum - currNum);
+};
+
+function divide (prevNum, currNum)
+{
+    return (prevNum / currNum);
+};
+
+function multiply (prevNum, currNum)
+{
+    return (prevNum * currNum);
+};
+
+function mod (prevNum, currNum)
+{
+    return (prevNum % currNum);
+};
