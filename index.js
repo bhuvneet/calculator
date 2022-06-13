@@ -1,5 +1,5 @@
 // add event handler to the number buttons clicked.
-let result = -1;
+let result = '';
 let prevNum = '';
 let currNum = '';
 let newNum = '';
@@ -10,7 +10,7 @@ for (let i = 0; i < num.length; i++)
 {
     // append number as number buttons are clicked + update display
     // store previous and new number clicked in variables
-    if (result === -1) // if there's no prior calculation done
+    if (result === '') // if there's no prior calculation done
     {
         if (whichOperation != 0)    // operator is clicked; don't append to currNum
         {   // second operand
@@ -24,8 +24,8 @@ for (let i = 0; i < num.length; i++)
             updateDisplay(prevNum);
         }
 
-        console.log('first num= ' + prevNum);
-        console.log('second Num= ' + currNum);
+        console.log('prevNum = ' + prevNum);
+        console.log('currNum = ' + currNum);
     }
     else    // if prior calculation was done i.e. result != -1
     {
@@ -34,8 +34,8 @@ for (let i = 0; i < num.length; i++)
         
         updateDisplay(currNum);  
 
-        console.log('first num= ' + prevNum);
-        console.log('second Num= ' + currNum);
+        console.log('prevNum = ' + prevNum);
+        console.log('currNum = ' + currNum);
     }
 })}
 
@@ -91,6 +91,7 @@ function operate ()
         }
 
         currNum = '';   // clear currNum value to store new value after result is computed.
+        whichOperation = '';
     }
 }
 
@@ -130,7 +131,7 @@ let clearPrev = document.getElementById("display");
 function updateDisplay (result)
 {
     document.getElementById("display").value = result;
-    console.log(result);
+    console.log('value in display:' + result);
 }
 
 let undo = document.getElementById("undo");
@@ -143,11 +144,59 @@ undo.addEventListener("click", () =>
     result = '';
 })
 
-/*
+// clear last digit from display
 let clear = document.getElementById("clear");
 let valueInDisplay = document.getElementById("display");
 clear.addEventListener("click", () =>
 {
-    let len = valueInDisplay.length;
-    valueInDisplay.length = len - 1;
-})*/
+    valueInDisplay.value = valueInDisplay.value.slice(0, -1);
+    this.value = valueInDisplay.value;
+    //prevNum = valueInDisplay.value;
+    //currNum = valueInDisplay.value;
+    
+    console.log('new value:' + this.value);
+    if (currNum === '' && whichOperation === 0) // update first operand
+    {
+        prevNum = this.value;
+        console.log('prevNum: ' + prevNum);
+    }
+    else if (currNum != '' && whichOperation != '')  // update second operand
+    {
+        currNum = this.value;
+        console.log('currNum: ' + currNum);
+    }
+    else if (prevNum != '')
+    {
+        whichOperation = this.value;
+        console.log('whichOperation: ' + whichOperation);
+    }
+    // update first or second operand 
+    // depending upon if operation button has been clicke.
+    /*if (isNaN(this)) // if the value being cleared is an operation
+    {
+        whichOperation = valueInDisplay.value;
+    }
+    else
+    {
+    if (prevNum != '' && prevNum != result)
+    {
+        prevNum = this.value;
+        console.log('now prevNum is: ' + prevNum);
+    }
+    else if (currNum != '') //update second operand
+    {
+        currNum = this.value;
+        console.log('now currNum is: ' + currNum);
+    }
+    else if (prevNum === result) // update previous result value
+    {
+        prevNum = this.value;
+        console.log('now prevNum is: ' + prevNum);
+    }
+    else
+    {
+        whichOperation = this.value;
+        console.log('now whichOperation is: ' + whichOperation);
+    }*/
+    
+})  // clear operation symbol
