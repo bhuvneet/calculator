@@ -1,7 +1,8 @@
 // add event handler to the number buttons clicked.
 let result = -1;
-let prevNum = -1;
-let currNum = -1;
+let prevNum = '';
+let currNum = '';
+let newNum = '';
 let num = document.getElementsByClassName("number");
 for (let i = 0; i < num.length; i++)
 {
@@ -11,20 +12,30 @@ for (let i = 0; i < num.length; i++)
     // store previous and new number clicked in variables
     if (result === -1) // if there's no prior calculation done
     {
-        // to be able to add more than 1 digit number
-        prevNum = currNum;
-        currNum = num[i].textContent;
-        updateDisplay(currNum);
-        console.log('prev num= ' + prevNum);
-        console.log('curr Num= ' + currNum);
+        if (whichOperation != 0)    // operator is clicked; don't append to currNum
+        {   // second operand
+            currNum += num[i].textContent;
+            updateDisplay(currNum);   
+        }
+
+        else
+        {   // first operand
+            prevNum += num[i].textContent;
+            updateDisplay(prevNum);
+        }
+
+        console.log('first num= ' + prevNum);
+        console.log('second Num= ' + currNum);
     }
-    else
+    else    // if prior calculation was done i.e. result != -1
     {
         prevNum = result;
-        currNum = num[i].textContent;
-        updateDisplay(currNum);
-        console.log('prev num= ' + prevNum);
-        console.log('curr Num= ' + currNum);
+        currNum += num[i].textContent;
+        
+        updateDisplay(currNum);  
+
+        console.log('first num= ' + prevNum);
+        console.log('second Num= ' + currNum);
     }
 })}
 
@@ -37,7 +48,7 @@ for (let i = 0; i < operation.length; i++)
     operation[i].addEventListener("click", () =>
 {
     whichOperation = operation[i].textContent;
-    console.log(whichOperation);
+    updateDisplay(whichOperation);  // add operation to display
 })}
 
 // once equals button is clicked, invoke operate()
@@ -78,6 +89,8 @@ function operate ()
         {
             mod(prevNum, currNum);
         }
+
+        currNum = '';   // clear currNum value to store new value after result is computed.
     }
 }
 
@@ -113,15 +126,21 @@ function mod (prevNum, currNum)
 };
 
 let display = document.getElementById("display");
+let clearPrev = document.getElementById("display");
 function updateDisplay (result)
 {
     document.getElementById("display").value = result;
+    console.log(result);
 }
 
 let undo = document.getElementById("undo");
 undo.addEventListener("click", () =>
 {
     display.value = '';
+    currNum = '';
+    prevNum = '';
+    newNum = '';
+    result = '';
 })
 
 /*
