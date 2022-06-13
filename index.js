@@ -1,5 +1,5 @@
 // add event handler to the number buttons clicked.
-let result = -1
+let result = -1;
 let prevNum = -1;
 let currNum = -1;
 let num = document.getElementsByClassName("number");
@@ -7,11 +7,14 @@ for (let i = 0; i < num.length; i++)
 {
     num[i].addEventListener("click", () =>
 {
+    // append number as number buttons are clicked + update display
     // store previous and new number clicked in variables
-    if (result === -1)
+    if (result === -1) // if there's no prior calculation done
     {
+        // to be able to add more than 1 digit number
         prevNum = currNum;
         currNum = num[i].textContent;
+        updateDisplay(currNum);
         console.log('prev num= ' + prevNum);
         console.log('curr Num= ' + currNum);
     }
@@ -19,10 +22,10 @@ for (let i = 0; i < num.length; i++)
     {
         prevNum = result;
         currNum = num[i].textContent;
+        updateDisplay(currNum);
         console.log('prev num= ' + prevNum);
         console.log('curr Num= ' + currNum);
     }
-
 })}
 
 
@@ -105,7 +108,7 @@ function multiply (prevNum, currNum)
 
 function mod (prevNum, currNum)
 {
-    result = +prevNum % +currNum;
+    result = ((+prevNum) % (+currNum));
     updateDisplay(result);
 };
 
@@ -120,3 +123,12 @@ undo.addEventListener("click", () =>
 {
     display.value = '';
 })
+
+/*
+let clear = document.getElementById("clear");
+let valueInDisplay = document.getElementById("display");
+clear.addEventListener("click", () =>
+{
+    let len = valueInDisplay.length;
+    valueInDisplay.length = len - 1;
+})*/
