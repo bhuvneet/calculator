@@ -3,11 +3,13 @@ let result = '';
 let prevNum = '';
 let currNum = '';
 let newNum = '';
+
 let num = document.getElementsByClassName("number");
 for (let i = 0; i < num.length; i++)
 {
-    num[i].addEventListener("click", () =>
+    num[i].addEventListener("click", () => 
 {
+    console.log("clicked")
     // append number as number buttons are clicked + update display
     // store previous and new number clicked in variables
     if (result === '') // if there's no prior calculation done
@@ -37,8 +39,49 @@ for (let i = 0; i < num.length; i++)
         console.log('prevNum = ' + prevNum);
         console.log('currNum = ' + currNum);
     }
-})}
+})};
 
+document.addEventListener('keydown', (event) =>
+{
+    console.log("key down works");
+    let keyName = event.key;
+    console.log("keyCode = ", keyName);
+    if (isFinite(event.key))
+    {
+        console.log("its a number!");
+        if (result === '') // if there's no prior calculation done
+        {
+            if (whichOperation != 0)    // operator is clicked; don't append to currNum
+            {   // second operand
+                currNum += keyName;
+                updateDisplay(currNum);   
+            }
+    
+            else
+            {   // first operand
+                prevNum += keyName;
+                updateDisplay(prevNum);
+            }
+    
+            console.log('prevNum = ' + prevNum);
+            console.log('currNum = ' + currNum);
+        }
+        else    // if prior calculation was done i.e. result != -1
+        {
+            prevNum = result;
+            currNum += keyName;
+            
+            updateDisplay(currNum);  
+    
+            console.log('prevNum = ' + prevNum);
+            console.log('currNum = ' + currNum);
+        }
+    }
+    else
+    {
+        return;
+    }
+});
 
 // add event handler to operation buttons clicked
 let whichOperation = 0;
