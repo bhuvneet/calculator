@@ -47,7 +47,7 @@ document.addEventListener('keydown', (event) =>
     let keyName = event.key;
     console.log("keyCode = ", keyName);
     
-    if (isFinite(keyName)) // number id pressed
+    if (isFinite(keyName) || keyName === ".") // number id pressed
     {
         console.log("its a number!");
         if (result === '') // if there's no prior calculation done
