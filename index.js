@@ -2,7 +2,6 @@
 let result = '';
 let prevNum = '';
 let currNum = '';
-let newNum = '';
 
 let num = document.getElementsByClassName("number");
 for (let i = 0; i < num.length; i++)
@@ -118,9 +117,6 @@ equals.addEventListener("click", operate);
 // operate on the numbers
 function operate ()
 {
-    //console.log(prevNum, currNum, whichOperation);
-    //let num1 = temp;    // store value of argument in a temp variable
-    //let num2 = temp;    // assign the value of temp to a new variable
     if (prevNum === -1 && currNum === -1 && whichOperation === 0)
     {
         return;
@@ -141,7 +137,16 @@ function operate ()
         }
         else if (whichOperation === "/")
         {
-            divide(prevNum, currNum);
+            if (currNum === "0")
+            {
+                updateDisplay("n/0 !allowed in math world");
+                prevNum = '';
+                currNum = '';
+            }
+            else
+            {
+                divide(prevNum, currNum);
+            }
         }
         else if (whichOperation === "%")
         {
@@ -206,7 +211,6 @@ undo.addEventListener("click", () =>
     display.value = '';
     currNum = '';
     prevNum = '';
-    newNum = '';
     result = '';
 })
 
@@ -217,8 +221,6 @@ clear.addEventListener("click", () =>
 {
     valueInDisplay.value = valueInDisplay.value.slice(0, -1);
     this.value = valueInDisplay.value;
-    //prevNum = valueInDisplay.value;
-    //currNum = valueInDisplay.value;
     
     console.log('new value:' + this.value);
     if (currNum === '' && whichOperation === 0) // update first operand
@@ -236,36 +238,7 @@ clear.addEventListener("click", () =>
         whichOperation = this.value;
         console.log('whichOperation: ' + whichOperation);
     }
-    // update first or second operand 
-    // depending upon if operation button has been clicke.
-    /*if (isNaN(this)) // if the value being cleared is an operation
-    {
-        whichOperation = valueInDisplay.value;
-    }
-    else
-    {
-    if (prevNum != '' && prevNum != result)
-    {
-        prevNum = this.value;
-        console.log('now prevNum is: ' + prevNum);
-    }
-    else if (currNum != '') //update second operand
-    {
-        currNum = this.value;
-        console.log('now currNum is: ' + currNum);
-    }
-    else if (prevNum === result) // update previous result value
-    {
-        prevNum = this.value;
-        console.log('now prevNum is: ' + prevNum);
-    }
-    else
-    {
-        whichOperation = this.value;
-        console.log('now whichOperation is: ' + whichOperation);
-    }*/
-    
-})  // clear operation symbol
+})  
 
 let equalSign = document.getElementById("equals");
 equalSign.addEventListener("mouseover", colorWhenHovered);
