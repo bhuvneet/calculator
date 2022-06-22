@@ -46,7 +46,8 @@ document.addEventListener('keydown', (event) =>
     console.log("key down works");
     let keyName = event.key;
     console.log("keyCode = ", keyName);
-    if (isFinite(event.key))
+    
+    if (isFinite(keyName)) // number id pressed
     {
         console.log("its a number!");
         if (result === '') // if there's no prior calculation done
@@ -77,6 +78,20 @@ document.addEventListener('keydown', (event) =>
             console.log('currNum = ' + currNum);
         }
     }
+
+    else if (keyName === "+" || keyName === "-" || keyName === "/" 
+    || keyName === "*" || keyName === "%") // operation is pressed
+    {
+        console.log("operation works")
+        whichOperation = keyName;
+        updateDisplay(whichOperation);
+    }
+
+    else if (keyName === "=" || keyName === "Enter")
+    {
+        operate();
+    }
+
     else
     {
         return;
@@ -120,7 +135,7 @@ function operate ()
         {
             subtract(prevNum, currNum);
         }
-        else if (whichOperation === "x")
+        else if (whichOperation === "x" || whichOperation === '*')
         {
             multiply(prevNum, currNum);
         }
@@ -171,10 +186,10 @@ function mod (prevNum, currNum)
 
 let display = document.getElementById("display");
 let clearPrev = document.getElementById("display");
-function updateDisplay (result)
+function updateDisplay (value)
 {
-    document.getElementById("display").value = result;
-    console.log('value in display:' + result);
+    document.getElementById("display").value = value;
+    console.log('value in display:' + value);
 }
 
 let undo = document.getElementById("undo");
