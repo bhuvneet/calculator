@@ -188,7 +188,15 @@ let display = document.getElementById("display");
 let clearPrev = document.getElementById("display");
 function updateDisplay (value)
 {
-    document.getElementById("display").value = value;
+    if (Number.isFinite(value))
+    {
+        value = Math.round(value * 1000) / 1000;
+        document.getElementById("display").value = value;
+    }
+    else
+    {
+        document.getElementById("display").value = value;
+    } 
     console.log('value in display:' + value);
 }
 
@@ -258,3 +266,24 @@ clear.addEventListener("click", () =>
     }*/
     
 })  // clear operation symbol
+
+let equalSign = document.getElementById("equals");
+equalSign.addEventListener("mouseover", colorWhenHovered);
+
+let undoSign = document.getElementById("undo");
+undoSign.addEventListener("mouseover", colorWhenHovered);
+
+let clearSign = document.getElementById("clear");
+clearSign.addEventListener("mouseover", colorWhenHovered);
+
+function colorWhenHovered (e)
+{
+    function randomColor()
+    {
+        return Math.floor(Math.random()*256);
+    }
+    x = e.offsetX;
+    y = e.offsetY;
+    
+    this.style.backgroundColor = `rgb(${randomColor()}, ${randomColor()}, ${randomColor()})`;
+}
