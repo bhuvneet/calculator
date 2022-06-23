@@ -28,8 +28,9 @@ body
     height: auto;
 }
 
-#display
+#display1, #display2
 {
+    display: flex;
     width: 100%;
     font-size: 4.5rem;
     height: 100px;

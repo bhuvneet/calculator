@@ -85,10 +85,17 @@ document.addEventListener('keydown', (event) =>
         }
         else    // if prior calculation was done i.e. result != -1
         {
-            prevNum = result;
-            currNum += keyName;
-            
-            updateDisplay(currNum);  
+
+            if (keyName === "." && currNum.includes(".")) // return if number already has a decimal.
+            {
+                return;
+            }
+            else
+            {
+                prevNum = result;
+                currNum += keyName;
+                updateDisplay(currNum);  
+            }
     
             console.log('prevNum = ' + prevNum);
             console.log('currNum = ' + currNum);
@@ -108,7 +115,7 @@ document.addEventListener('keydown', (event) =>
         operate();
     }
 
-    else
+    else // if a key other than valid keys, is pressed.
     {
         return;
     }
@@ -207,26 +214,36 @@ function mod (prevNum, currNum)
     updateDisplay(result);
 };
 
-let display = document.getElementById("display");
-let clearPrev = document.getElementById("display");
+let display1 = document.getElementById("display1");
+let display2 = document.getElementById("display2");
+
+let prevValue = document.getElementById("display1");
+
 function updateDisplay (newValue)
 {
+    if (result != '')
+    {   // display result on upper display screen
+        document.getElementById("display1").value = result;
+        display2.value = '';
+    }
     if (Number.isFinite(newValue))
-    {
+    {   // if value pressed/clicked is a number
         value = Math.round(newValue * 1000) / 1000;
-        document.getElementById("display").value = newValue;
-        console.log('value in display:' + newValue);
+        document.getElementById("display2").value = newValue;    
+        console.log('value in display2:' + newValue);
     }
     else
-    {
-        document.getElementById("display").value = newValue;
+    {   // if value being displayed is error message for dividing by 0.
+        document.getElementById("display2").value = newValue;
     }    
 }
 
+// erase all stored values from the variables.
 let undo = document.getElementById("undo");
 undo.addEventListener("click", () =>
 {
-    display.value = '';
+    display1.value = '';
+    display2.value = '';
     currNum = '';
     prevNum = '';
     result = '';
@@ -234,7 +251,7 @@ undo.addEventListener("click", () =>
 
 // clear last digit from display
 let clear = document.getElementById("clear");
-let valueInDisplay = document.getElementById("display");
+let valueInDisplay = document.getElementById("display2");
 clear.addEventListener("click", () =>
 {
     valueInDisplay.value = valueInDisplay.value.slice(0, -1);
@@ -258,6 +275,7 @@ clear.addEventListener("click", () =>
     }
 })  
 
+// change color when mouse is over buttons
 let equalSign = document.getElementById("equals");
 equalSign.addEventListener("mouseover", colorWhenHovered);
 
