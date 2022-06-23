@@ -87,3 +87,16 @@ button:hover
     font-weight: bold;
     font-size: 35px;
 }
+
+.copyright
+{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: lightgray;
+    color: black;
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+}
