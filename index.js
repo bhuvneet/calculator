@@ -13,16 +13,29 @@ for (let i = 0; i < num.length; i++)
     // store previous and new number clicked in variables
     if (result === '') // if there's no prior calculation done
     {
-        if (whichOperation != 0)    // operator is clicked; don't append to currNum
+        if (whichOperation != 0) // operator is clicked; don't append to prevNum
         {   // second operand
-            currNum += num[i].textContent;
-            updateDisplay(currNum);   
+            if (num[i].textContent === "." && currNum.includes(".")) // return if number already has a decimal.
+            {
+                return;
+            }
+            else
+            {
+                currNum += num[i].textContent;
+                updateDisplay(currNum); 
+            }  
         }
-
         else
         {   // first operand
-            prevNum += num[i].textContent;
-            updateDisplay(prevNum);
+            if (num[i].textContent === "." && prevNum.includes(".")) // return if number already has a decimal.
+            {
+                return;
+            }
+            else
+            {
+                prevNum += num[i].textContent;
+                updateDisplay(prevNum);
+            }
         }
 
         console.log('prevNum = ' + prevNum);
@@ -51,7 +64,11 @@ document.addEventListener('keydown', (event) =>
         console.log("its a number!");
         if (result === '') // if there's no prior calculation done
         {
-            if (whichOperation != 0)    // operator is clicked; don't append to currNum
+            if (keyName === "." && currNum.includes(".")) // return if number already has a decimal.
+            {
+                return;
+            }
+            else if (whichOperation != 0)    // operator is clicked; don't append to currNum
             {   // second operand
                 currNum += keyName;
                 updateDisplay(currNum);   
@@ -142,6 +159,7 @@ function operate ()
                 updateDisplay("n/0 !allowed in math world");
                 prevNum = '';
                 currNum = '';
+                result = '';
             }
             else
             {
@@ -191,18 +209,18 @@ function mod (prevNum, currNum)
 
 let display = document.getElementById("display");
 let clearPrev = document.getElementById("display");
-function updateDisplay (value)
+function updateDisplay (newValue)
 {
-    if (Number.isFinite(value))
+    if (Number.isFinite(newValue))
     {
-        value = Math.round(value * 1000) / 1000;
-        document.getElementById("display").value = value;
+        value = Math.round(newValue * 1000) / 1000;
+        document.getElementById("display").value = newValue;
+        console.log('value in display:' + newValue);
     }
     else
     {
-        document.getElementById("display").value = value;
-    } 
-    console.log('value in display:' + value);
+        document.getElementById("display").value = newValue;
+    }    
 }
 
 let undo = document.getElementById("undo");
