@@ -3,6 +3,7 @@ let result = '';
 let prevNum = '';
 let currNum = '';
 
+// if a number is clicked
 let num = document.getElementsByClassName("number");
 for (let i = 0; i < num.length; i++)
 {
@@ -43,13 +44,26 @@ for (let i = 0; i < num.length; i++)
     }
     else    // if prior calculation was done i.e. result != -1
     {
-        prevNum = result;
-        currNum += num[i].textContent;
-        
-        updateDisplay(currNum);  
+        if (whichOperation === '')
+        {
+            // user overwrote a number, so clear the prevNum
+            // start new calculation
+            prevNum = '';
+            currNum += num[i].textContent;
 
-        console.log('prevNum = ' + prevNum);
-        console.log('currNum = ' + currNum);
+            updateDisplay(currNum);
+
+        }
+        else
+        {
+            // when user has entered a number, an operator and another number
+            // this is the second oparand
+            prevNum = result;
+            currNum += num[i].textContent;
+            
+            updateDisplay(currNum);  
+        }
+        
     }
 })};
 
@@ -141,6 +155,7 @@ equals.addEventListener("click", operate);
 // operate on the numbers
 function operate ()
 {
+    // this function is called when equals operator is pressed/clicked
     if (prevNum === -1 && currNum === -1 && whichOperation === 0)
     {
         return;
@@ -166,7 +181,6 @@ function operate ()
                 updateDisplay("n/0 !allowed in math world");
                 prevNum = '';
                 currNum = '';
-                result = '';
             }
             else
             {
@@ -178,7 +192,7 @@ function operate ()
             mod(prevNum, currNum);
         }
 
-        currNum = '';   // clear currNum value to store new value after result is computed.
+        currNum = '';   // clear currNum value, operation type and result to store new value after result is computed.
         whichOperation = '';
     }
 }
@@ -187,30 +201,35 @@ function operate ()
 function add (prevNum, currNum)
 {
     result = +prevNum + +currNum;
+    result = (Math.round(result * 10000) / 10000).toFixed(4);
     updateDisplay(result);
 };
 
 function subtract (prevNum, currNum)
 {
     result = +prevNum - +currNum;
+    result = (Math.round(result * 10000) / 10000).toFixed(4);
     updateDisplay(result);
 };
 
 function divide (prevNum, currNum)
 {
     result = +prevNum / +currNum;
+    result = (Math.round(result * 10000) / 10000).toFixed(4);
     updateDisplay(result);
 };
 
 function multiply (prevNum, currNum)
 {
     result = +prevNum * +currNum;
+    result = (Math.round(result * 10000) / 10000).toFixed(4);
     updateDisplay(result);
 };
 
 function mod (prevNum, currNum)
 {
     result = ((+prevNum) % (+currNum));
+    result = (Math.round(result * 10000) / 10000).toFixed(4);
     updateDisplay(result);
 };
 
@@ -221,21 +240,28 @@ let prevValue = document.getElementById("display1");
 
 function updateDisplay (newValue)
 {
-    if (result != '')
+    if(whichOperation === '' || whichOperation === 0)
+    {
+        // if user entered a number
+        display2.value = newValue;
+    }
+    if (result != '' && whichOperation != '')
     {   // display result on upper display screen
-        document.getElementById("display1").value = result;
-        display2.value = '';
+        display1.value = result;
     }
     if (Number.isFinite(newValue))
     {   // if value pressed/clicked is a number
-        value = Math.round(newValue * 1000) / 1000;
-        document.getElementById("display2").value = newValue;    
-        console.log('value in display2:' + newValue);
+        value = Math.round(newValue * 10000) / 10000;
+        display2.value = newValue;    
     }
-    else
+    else if (currNum === "0" && whichOperation === "/")
     {   // if value being displayed is error message for dividing by 0.
-        document.getElementById("display2").value = newValue;
-    }    
+        display2.value = newValue;  // current value
+    }  
+    else
+    {
+        display2.value = newValue;
+    }
 }
 
 // erase all stored values from the variables.
@@ -250,8 +276,9 @@ undo.addEventListener("click", () =>
 })
 
 // clear last digit from display
-let clear = document.getElementById("clear");
-let valueInDisplay = document.getElementById("display2");
+let clear           = document.getElementById("clear");
+let valueInDisplay  = document.getElementById("display2");
+
 clear.addEventListener("click", () =>
 {
     valueInDisplay.value = valueInDisplay.value.slice(0, -1);
