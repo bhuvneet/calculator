@@ -342,7 +342,7 @@ function colorWhenHovered (e)
 {
     function randomColor()
     {
-        return Math.floor(Math.random()*256);
+        return Math.floor((1 + Math.random()) * 256 / 2);
     }
     x = e.offsetX;
     y = e.offsetY;
