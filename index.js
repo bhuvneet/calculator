@@ -2,6 +2,8 @@
 let result = '';
 let prevNum = '';
 let currNum = '';
+let isEquals = false;
+let findOperator = -1;
 
 // if a number is clicked
 let num = document.getElementsByClassName("number");
@@ -44,17 +46,19 @@ for (let i = 0; i < num.length; i++)
         {
             // user overwrote a number, so clear the prevNum
             // start new calculation
-            prevNum = '';
-            currNum += num[i].textContent;
+            prevNum += num[i].textContent;
 
-            updateDisplay(currNum, 'currNum');
+            updateDisplay(prevNum, 'prevNum');
 
         }
         else
         {
             // when user has entered a number, an operator and another number
             // this is the second oparand
-            prevNum = result;
+            if (prevNum === '')
+            {
+                prevNum = result;
+            }
             currNum += num[i].textContent;
             
             updateDisplay(currNum, 'currNum');  
@@ -112,7 +116,8 @@ document.addEventListener('keydown', (event) =>
 
     else if (keyName === "=" || keyName === "Enter")
     {
-        operate();
+        isEquals = true;
+        operate();      
     }
 
     else // if a key other than valid keys, is pressed.
@@ -128,13 +133,23 @@ for (let i = 0; i < operation.length; i++)
 {
     operation[i].addEventListener("click", () =>
 {
+    if (prevNum != '' && currNum != '')
+    {
+        // if we have both operands available, 
+        // calculate the result first
+        operate();
+    }
     whichOperation = operation[i].textContent;
     updateDisplay(whichOperation, 'operator');  // display operator
 })}
 
 // once equals button is clicked, invoke operate()
 let equals = document.getElementById("equals");
-equals.addEventListener("click", operate); 
+equals.addEventListener("click", function()
+{
+    isEquals = true;
+    operate();
+}); 
 
 // store 1st num when user presses operator
 // save which operation
@@ -178,6 +193,7 @@ function operate ()
             mod(prevNum, currNum);
         }
 
+        prevNum = '';
         currNum = '';   // clear currNum value, operation type and result to store new value after result is computed.
         whichOperation = '';
     }
@@ -188,35 +204,51 @@ function add (prevNum, currNum)
 {
     result = +prevNum + +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result, 'result');
+    // display result only when equals to is clicked/pressed
+    if (isEquals)
+    {
+        updateDisplay(result, 'result');
+    }   
 };
 
 function subtract (prevNum, currNum)
 {
     result = +prevNum - +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result, 'result');
+    if (isEquals)
+    {
+        updateDisplay(result, 'result');
+    } 
 };
 
 function divide (prevNum, currNum)
 {
     result = +prevNum / +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result, 'result');
+    if (isEquals)
+    {
+        updateDisplay(result, 'result');
+    } 
 };
 
 function multiply (prevNum, currNum)
 {
     result = +prevNum * +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result, 'result');
+    if (isEquals)
+    {
+        updateDisplay(result, 'result');
+    } 
 };
 
 function mod (prevNum, currNum)
 {
     result = ((+prevNum) % (+currNum));
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result, 'result');
+    if (isEquals)
+    {
+        updateDisplay(result, 'result');
+    } 
 };
 
 let display1 = document.getElementById("display1");
@@ -233,9 +265,40 @@ function updateDisplay (newValue, type)
     }
     if (type === 'currNum')
     {
-        // second operand
-        display1.value = prevNum + ' ' + whichOperation + ' ' + currNum;
-        display2.value = newValue;
+        if (whichOperation === '')
+        {
+            // user overwrote the previous calculation
+            display1.value = '';
+            display2.value = newValue;
+        }
+        else
+        {
+            // second operand
+            if (result != '')
+            {
+                // do operation with previous result, so prev result is first operand
+                // if the string already has an operator, don't update the display to result plus new currNum
+                // instead display the complete string
+                if (findOperator = display1.value.includes(whichOperation))
+                {
+                    display1.value += currNum;
+                    display2.value = newValue;
+                }
+                else
+                {
+                    display1.value = result + ' ' + whichOperation + ' ' + currNum;
+                    display2.value = newValue;
+                }
+                
+            }
+            else
+            {
+                // no prev result is available
+                display1.value = prevNum + ' ' + whichOperation + ' ' + currNum;
+                display2.value = newValue;
+            }
+            
+        }
     }
     if (type === 'prevNum')
     {
@@ -244,12 +307,34 @@ function updateDisplay (newValue, type)
     }
     if (type === 'result')
     {
-        display2.value = newValue;
+        display2.value = '= ' + newValue;
     }
     if (type === 'operator')
     {
-        display1.value = display2.value + ' ' + newValue;
-        display2.value = newValue;
+        // if there is no second operand
+        if (currNum === '')
+        {
+            if (prevNum === '')
+            {
+                // if prevNum is null -- this will happen when a second operation is being performed, 
+                // and calculation has been performed on previous two operands.
+                display1.value += ' ' + newValue + ' ';
+                display2.value = newValue;
+            }
+            else
+            {
+                display1.value = display2.value + ' ' + newValue + ' ';
+                display2.value = newValue;
+            }
+            
+        }
+        else if (prevNum != '' && currNum != '')
+        {
+            // a second operation is being performed 
+            // when two operands are already available.
+            display1.value += ' ' + newValue + ' ';
+            display2.value = newValue;
+        }
     }
 }
 
@@ -284,6 +369,11 @@ clear.addEventListener("click", () =>
     else if (prevNum != '')
     {
         whichOperation = this.value;
+    }
+    else if (prevNum === '' && currNum === '' 
+    && whichOperation === '' && result != '')
+    {
+        result = this.value;
     }
 })  
 
