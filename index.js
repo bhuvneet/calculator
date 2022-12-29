@@ -9,7 +9,6 @@ for (let i = 0; i < num.length; i++)
 {
     num[i].addEventListener("click", () => 
 {
-    console.log("clicked")
     // append number as number buttons are clicked + update display
     // store previous and new number clicked in variables
     if (result === '') // if there's no prior calculation done
@@ -38,9 +37,6 @@ for (let i = 0; i < num.length; i++)
                 updateDisplay(prevNum, 'prevNum');
             }
         }
-
-        console.log('prevNum = ' + prevNum);
-        console.log('currNum = ' + currNum);
     }
     else    // if prior calculation was done i.e. result != -1
     {
@@ -69,13 +65,10 @@ for (let i = 0; i < num.length; i++)
 
 document.addEventListener('keydown', (event) =>
 {
-    console.log("key down works");
     let keyName = event.key;
-    console.log("keyCode = ", keyName);
     
     if (isFinite(keyName) || keyName === ".") // number id pressed
     {
-        console.log("its a number!");
         if (result === '') // if there's no prior calculation done
         {
             if (keyName === "." && currNum.includes(".")) // return if number already has a decimal.
@@ -93,9 +86,6 @@ document.addEventListener('keydown', (event) =>
                 prevNum += keyName;
                 updateDisplay(prevNum, 'prevNum');
             }
-    
-            console.log('prevNum = ' + prevNum);
-            console.log('currNum = ' + currNum);
         }
         else    // if prior calculation was done i.e. result != -1
         {
@@ -110,16 +100,12 @@ document.addEventListener('keydown', (event) =>
                 currNum += keyName;
                 updateDisplay(currNum, 'currNum');  
             }
-    
-            console.log('prevNum = ' + prevNum);
-            console.log('currNum = ' + currNum);
         }
     }
 
     else if (keyName === "+" || keyName === "-" || keyName === "/" 
     || keyName === "*" || keyName === "%") // operation is pressed
     {
-        console.log("operation works")
         whichOperation = keyName;
         updateDisplay(whichOperation, 'operator');
     }
@@ -265,29 +251,6 @@ function updateDisplay (newValue, type)
         display1.value = display2.value + ' ' + newValue;
         display2.value = newValue;
     }
-
-/*     if(whichOperation === '' || whichOperation === 0)
-    {
-        // if user entered a number to overwrite previous operation
-        display2.value = newValue;
-    }
-    if (result != '' && whichOperation != '')
-    {   // display result on upper display screen
-        display1.value = result;
-    }
-    if (Number.isFinite(newValue))
-    {   // if value pressed/clicked is a number
-        value = Math.round(newValue * 10000) / 10000;
-        display2.value = newValue;    
-    }
-    else if (currNum === "0" && whichOperation === "/")
-    {   // if value being displayed is error message for dividing by 0.
-        display2.value = newValue;  // current value
-    }  
-    else
-    {
-        display2.value = newValue;
-    } */
 }
 
 // erase all stored values from the variables.
@@ -310,21 +273,17 @@ clear.addEventListener("click", () =>
     valueInDisplay.value = valueInDisplay.value.slice(0, -1);
     this.value = valueInDisplay.value;
     
-    console.log('new value:' + this.value);
     if (currNum === '' && whichOperation === 0) // update first operand
     {
         prevNum = this.value;
-        console.log('prevNum: ' + prevNum);
     }
     else if (currNum != '' && whichOperation != '')  // update second operand
     {
         currNum = this.value;
-        console.log('currNum: ' + currNum);
     }
     else if (prevNum != '')
     {
         whichOperation = this.value;
-        console.log('whichOperation: ' + whichOperation);
     }
 })  
 
