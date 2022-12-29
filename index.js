@@ -23,7 +23,7 @@ for (let i = 0; i < num.length; i++)
             else
             {
                 currNum += num[i].textContent;
-                updateDisplay(currNum); 
+                updateDisplay(currNum, 'currNum'); 
             }  
         }
         else
@@ -35,7 +35,7 @@ for (let i = 0; i < num.length; i++)
             else
             {
                 prevNum += num[i].textContent;
-                updateDisplay(prevNum);
+                updateDisplay(prevNum, 'prevNum');
             }
         }
 
@@ -51,7 +51,7 @@ for (let i = 0; i < num.length; i++)
             prevNum = '';
             currNum += num[i].textContent;
 
-            updateDisplay(currNum);
+            updateDisplay(currNum, 'currNum');
 
         }
         else
@@ -61,7 +61,7 @@ for (let i = 0; i < num.length; i++)
             prevNum = result;
             currNum += num[i].textContent;
             
-            updateDisplay(currNum);  
+            updateDisplay(currNum, 'currNum');  
         }
         
     }
@@ -85,13 +85,13 @@ document.addEventListener('keydown', (event) =>
             else if (whichOperation != 0)    // operator is clicked; don't append to currNum
             {   // second operand
                 currNum += keyName;
-                updateDisplay(currNum);   
+                updateDisplay(currNum, 'currNum');   
             }
     
             else
             {   // first operand
                 prevNum += keyName;
-                updateDisplay(prevNum);
+                updateDisplay(prevNum, 'prevNum');
             }
     
             console.log('prevNum = ' + prevNum);
@@ -108,7 +108,7 @@ document.addEventListener('keydown', (event) =>
             {
                 prevNum = result;
                 currNum += keyName;
-                updateDisplay(currNum);  
+                updateDisplay(currNum, 'currNum');  
             }
     
             console.log('prevNum = ' + prevNum);
@@ -121,7 +121,7 @@ document.addEventListener('keydown', (event) =>
     {
         console.log("operation works")
         whichOperation = keyName;
-        updateDisplay(whichOperation);
+        updateDisplay(whichOperation, 'operator');
     }
 
     else if (keyName === "=" || keyName === "Enter")
@@ -143,7 +143,7 @@ for (let i = 0; i < operation.length; i++)
     operation[i].addEventListener("click", () =>
 {
     whichOperation = operation[i].textContent;
-    updateDisplay(whichOperation);  // add operation to display
+    updateDisplay(whichOperation, 'operator');  // display operator
 })}
 
 // once equals button is clicked, invoke operate()
@@ -178,7 +178,7 @@ function operate ()
         {
             if (currNum === "0")
             {
-                updateDisplay("n/0 !allowed in math world");
+                updateDisplay("n/0 !allowed in math world", 'error');
                 prevNum = '';
                 currNum = '';
             }
@@ -202,35 +202,35 @@ function add (prevNum, currNum)
 {
     result = +prevNum + +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result);
+    updateDisplay(result, 'result');
 };
 
 function subtract (prevNum, currNum)
 {
     result = +prevNum - +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result);
+    updateDisplay(result, 'result');
 };
 
 function divide (prevNum, currNum)
 {
     result = +prevNum / +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result);
+    updateDisplay(result, 'result');
 };
 
 function multiply (prevNum, currNum)
 {
     result = +prevNum * +currNum;
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result);
+    updateDisplay(result, 'result');
 };
 
 function mod (prevNum, currNum)
 {
     result = ((+prevNum) % (+currNum));
     result = (Math.round(result * 10000) / 10000).toFixed(4);
-    updateDisplay(result);
+    updateDisplay(result, 'result');
 };
 
 let display1 = document.getElementById("display1");
@@ -238,11 +238,37 @@ let display2 = document.getElementById("display2");
 
 let prevValue = document.getElementById("display1");
 
-function updateDisplay (newValue)
+function updateDisplay (newValue, type)
 {
-    if(whichOperation === '' || whichOperation === 0)
+    // if type == error, display the error message
+    if (type === 'error')
     {
-        // if user entered a number
+        display2.value = newValue;
+    }
+    if (type === 'currNum')
+    {
+        // second operand
+        display1.value = prevNum + ' ' + whichOperation + ' ' + currNum;
+        display2.value = newValue;
+    }
+    if (type === 'prevNum')
+    {
+        // first operand
+        display2.value = newValue;
+    }
+    if (type === 'result')
+    {
+        display2.value = newValue;
+    }
+    if (type === 'operator')
+    {
+        display1.value = display2.value + ' ' + newValue;
+        display2.value = newValue;
+    }
+
+/*     if(whichOperation === '' || whichOperation === 0)
+    {
+        // if user entered a number to overwrite previous operation
         display2.value = newValue;
     }
     if (result != '' && whichOperation != '')
@@ -261,7 +287,7 @@ function updateDisplay (newValue)
     else
     {
         display2.value = newValue;
-    }
+    } */
 }
 
 // erase all stored values from the variables.
