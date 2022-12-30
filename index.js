@@ -3,13 +3,20 @@ let result          = '';
 let prevNum         = '';
 let currNum         = '';
 let isEquals        = false;
-let findOperator    = -1;
+let findOperator    = '';
 let firstOp         = null;
 let secondOp        = null;
 let firstOperation  = null;
 const expressions   = [];
+const mathExp       = [];
 let stringOperation = '';
-let strExp = null;
+let strExp          = '';
+let expression      = '';
+let operators       = /[/+x*%-]/;
+let prevOperatorIndex   = '';
+let prevOperator        = '';
+let prevScndOpIndex = '';
+let prevScndOp      = '';
 
 // if a number is clicked
 let num = document.getElementsByClassName("number");
@@ -30,6 +37,8 @@ for (let i = 0; i < num.length; i++)
             }
             else
             {
+                // we don't have any result
+                // this is second operand
                 currNum += num[i].textContent;
                 updateDisplay(currNum, 'currNum'); 
             }  
@@ -143,13 +152,35 @@ for (let i = 0; i < operation.length; i++)
     {
         if (prevNum != '' && currNum != '' && whichOperation != '')
         {
-            let expression = prevNum + whichOperation + currNum;
-            secondOp = whichOperation + currNum;
+            // for displaying purposes
+            if (mathExp.length < 1)
+            {
+                // if there no entry in the array, 
+                // i.e. this is the first complete expression
+                expression = prevNum; // first operand
+                mathExp.push(expression);
+                
+                expression = ' ' + whichOperation + ' ' + currNum;    // second operand
+                mathExp.push(expression);
+            }
+            else
+            {
+                expression = ' ' + whichOperation + ' ' + currNum;
+                mathExp.push(expression);
+            }
 
+            // if we have two operands and an operator, add them to the array
+            // before updating the operator to the new input
+            expression = prevNum + ' ' 
+                            + whichOperation + ' ' 
+                            + currNum;
+
+            // for mathematical operation
             expressions.push(expression);
 
             prevNum = currNum;
             currNum = '';
+
         }
 
         whichOperation = operation[i].textContent;
@@ -161,21 +192,192 @@ for (let i = 0; i < operation.length; i++)
 let equals = document.getElementById("equals");
 equals.addEventListener("click", function()
 {
-    // when enter is pressed/clicked, push expression to array
-    if (expressions.length > 1)
-    {
-        let expression = prevNum + whichOperation + currNum;
-        secondOp = whichOperation + currNum;
+    
 
+    // when enter is pressed/clicked, push expression to array
+    if (mathExp.length > 1 || mathExp.length === 1)
+    {
+        expression = prevNum + ' ' + whichOperation + ' ' + currNum;
         expressions.push(expression);
 
+        expression = ' ' + whichOperation + ' ' + currNum;
+        mathExp.push(expression);
         
         // calculation will be a string of operations
         // first extract the entries from expressions array
-        expressions.forEach(element => stringOperation += element);
+        mathExp.forEach(element => 
+            stringOperation += element
+            );
+
+        // extract operands and operators from the string
+        stringOperation = stringOperation.split(" ").join("");
+
+        // find first operator
+/*         findOperator = stringOperation.indexOf("/");
+        if (findOperator != -1)
+        {
+            // division operator found
+            // evaluate expression before moving on to others
+            let firstOperand    = stringOperation.indexOf(findOperator - 1);
+            let secondOperand   = stringOperation.indexOf(findOperator + 1);
+        } */
+
+        // find operator in array elements, and evaluate the expression based on precedence
+        let i = 0;
+        expressions.forEach(element => {
+            
+            // remove spaces from elements first
+            element = element.split(" ").join("");
+
+            // find division
+            let whichIndex = expressions[i].indexOf('/');
+
+            // keep track of previous second operand and operator
+            if (whichIndex == -1)
+            {
+                if(operators.test(element))
+                { 
+                    expression = element;
+
+                    prevOperatorIndex   = expression.search(operators);
+
+                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
+                
+                    prevScndOp          = expression.substring(prevOperatorIndex+1);
+                
+                } 
+            }                  
+
+            if (whichIndex != -1)
+            {
+                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
+                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
+                whichOperation = element.substring(whichIndex-1, whichIndex);
+
+                operate();
+                
+                expressions[i] = result;    // update the element to result of calculation       
+
+                console.log("division found");
+
+                if (i > 0)
+                {
+                    // find second operand in previous element in array
+                    // and replace it with the result calculated
+                    element     = expressions[i - 1];
+                    element     = element.split(" ").join("");
+
+                    let splitStr    = [element.slice(0, prevOperatorIndex + 1), result].join('');
+
+                    expressions[i - 1] = splitStr; 
+
+                }
+            }
+            i++;
+        });
+
+        // find multiplication
+        i = 0;
+        expressions.forEach(element => {
+
+            // remove spaces from elements first
+            element = element.split(" ").join("");
+
+            let whichIndex = expressions[i].indexOf('x');
+
+            if (whichIndex != -1)
+            {
+                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
+                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
+                whichOperation = element.substring(whichIndex-1, whichIndex);
+
+                operate();
+                
+                expressions[i] = result;    // update the element to result of calculation
+
+                console.log("multiplication found");
+            }
+            i++;
+        });
+
+        // find modulo
+        i = 0;
+        expressions.forEach(element => {
+
+            // remove spaces from elements first
+            element = element.split(" ").join("");
+
+            let whichIndex = expressions[i].indexOf('%');
+
+            if (whichIndex != -1)
+            {
+                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
+                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
+                whichOperation = element.substring(whichIndex-1, whichIndex);
+
+                operate();
+                
+                expressions[i] = result;    // update the element to result of calculation
+
+                console.log("modulo found");
+            }
+            i++;
+        });
+
+        // once division, multiplication and modulo have been dealt with
+        // find additions and subtractions
+        // find multiplication
+        i = 0;
+        expressions.forEach(element => {
+
+            // remove spaces from elements first
+            element = element.split(" ").join("");
+
+            let whichIndex = expressions[i].indexOf('+');
+
+            if (whichIndex != -1)
+            {
+                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
+                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
+                whichOperation = element.substring(whichIndex-1, whichIndex);
+
+                operate();
+                
+                expressions[i] = result;    // update the element to result of calculation
+
+                console.log("addition found");
+            }
+            i++;
+        });
+
+        // find multiplication
+        i = 0;
+        expressions.forEach(element => {
+
+            // remove spaces from elements first
+            element = element.split(" ").join("");
+
+            let whichIndex = expressions[i].indexOf('-');
+
+            if (whichIndex != -1)
+            {
+                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
+                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
+                whichOperation = element.substring(whichIndex-1, whichIndex);
+
+                operate();
+                
+                expressions[i] = result;    // update the element to result of calculation
+
+                console.log("subtraction found");
+            }
+            i++;
+        });
+
     }
+
     isEquals = true;
-    operate();
+    // display result after this
 }); 
 
 // store 1st num when user presses operator
@@ -313,6 +515,7 @@ function updateDisplay (newValue, type)
                 }
                 else
                 {
+                    // concatenante the new input with the previous result
                     display1.value = result + ' ' + whichOperation + ' ' + currNum;
                     display2.value = newValue;
                 }              
@@ -323,17 +526,31 @@ function updateDisplay (newValue, type)
                 // expression is a string of various operations
                 if (prevNum != '')
                 {
-                    if (expressions.length === 1 || expressions.length > 1)
-                    {
-                        strExp = display1.value;
-                        display1.value = strExp + newValue;
+                    if (mathExp.length === 1 || mathExp.length > 1)
+                    {   
                         // display elements from the array 
                         // and append new value to display updated value
+                        if (expressions.length > 1)
+                        {
+                            mathExp.forEach(elem => strExp += elem);
+                            display1.value = strExp + ' ' + whichOperation + ' ' 
+                            + newValue;
+                            strExp = '';    // empty the string again for next time
+                        }
+                        else
+                        {
+                            // for first complete operation
+                            expressions.forEach(elem => strExp += elem);
+                            display1.value = strExp + ' ' + whichOperation + ' ' 
+                            + newValue;
+                            strExp = '';    // empty the string again for next time
+                        }
                     }
                     else
                     {
-                        display1.value += newValue;
-                        strExp = display1.value;
+                        display1.value = prevNum + ' ' 
+                            + whichOperation + ' '
+                            + currNum;
                     }
                     
 
@@ -377,6 +594,7 @@ function updateDisplay (newValue, type)
                 {
                     // if display 1 is empty
                     display1.value = display2.value + ' ' + newValue + ' ';
+                    display2.value = newValue;
                 }
                 else
                 {
