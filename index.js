@@ -1,9 +1,15 @@
 // add event handler to the number buttons clicked.
-let result = '';
-let prevNum = '';
-let currNum = '';
-let isEquals = false;
-let findOperator = -1;
+let result          = '';
+let prevNum         = '';
+let currNum         = '';
+let isEquals        = false;
+let findOperator    = -1;
+let firstOp         = null;
+let secondOp        = null;
+let firstOperation  = null;
+const expressions   = [];
+let stringOperation = '';
+let strExp = null;
 
 // if a number is clicked
 let num = document.getElementsByClassName("number");
@@ -16,7 +22,8 @@ for (let i = 0; i < num.length; i++)
     if (result === '') // if there's no prior calculation done
     {
         if (whichOperation != 0) // operator is clicked; don't append to prevNum
-        {   // second operand
+        {   
+            // second operand
             if (num[i].textContent === "." && currNum.includes(".")) // return if number already has a decimal.
             {
                 return;
@@ -35,12 +42,12 @@ for (let i = 0; i < num.length; i++)
             }
             else
             {
-                prevNum += num[i].textContent;
+                prevNum += num[i].textContent;  // keep appending to prevNum
                 updateDisplay(prevNum, 'prevNum');
             }
         }
     }
-    else    // if prior calculation was done i.e. result != -1
+    else    // we have a result from prior calculation
     {
         if (whichOperation === '')
         {
@@ -57,7 +64,7 @@ for (let i = 0; i < num.length; i++)
             // this is the second oparand
             if (prevNum === '')
             {
-                prevNum = result;
+                prevNum = result;   // assign result to prevNum
             }
             currNum += num[i].textContent;
             
@@ -65,6 +72,7 @@ for (let i = 0; i < num.length; i++)
         }
         
     }
+
 })};
 
 document.addEventListener('keydown', (event) =>
@@ -132,21 +140,40 @@ let operation = document.getElementsByClassName("operation");
 for (let i = 0; i < operation.length; i++)
 {
     operation[i].addEventListener("click", () =>
-{
-    if (prevNum != '' && currNum != '')
     {
-        // if we have both operands available, 
-        // calculate the result first
-        operate();
-    }
-    whichOperation = operation[i].textContent;
-    updateDisplay(whichOperation, 'operator');  // display operator
-})}
+        if (prevNum != '' && currNum != '' && whichOperation != '')
+        {
+            let expression = prevNum + whichOperation + currNum;
+            secondOp = whichOperation + currNum;
+
+            expressions.push(expression);
+
+            prevNum = currNum;
+            currNum = '';
+        }
+
+        whichOperation = operation[i].textContent;
+        updateDisplay(whichOperation, 'operator');  // display operator
+    })
+}
 
 // once equals button is clicked, invoke operate()
 let equals = document.getElementById("equals");
 equals.addEventListener("click", function()
 {
+    // when enter is pressed/clicked, push expression to array
+    if (expressions.length > 1)
+    {
+        let expression = prevNum + whichOperation + currNum;
+        secondOp = whichOperation + currNum;
+
+        expressions.push(expression);
+
+        
+        // calculation will be a string of operations
+        // first extract the entries from expressions array
+        expressions.forEach(element => stringOperation += element);
+    }
     isEquals = true;
     operate();
 }); 
@@ -273,7 +300,7 @@ function updateDisplay (newValue, type)
         }
         else
         {
-            // second operand
+            // if the operation is being done on previous result
             if (result != '')
             {
                 // do operation with previous result, so prev result is first operand
@@ -281,21 +308,43 @@ function updateDisplay (newValue, type)
                 // instead display the complete string
                 if (findOperator = display1.value.includes(whichOperation))
                 {
-                    display1.value += currNum;
+                    display1.value = prevNum + ' ' + whichOperation + ' ' + currNum;
                     display2.value = newValue;
                 }
                 else
                 {
                     display1.value = result + ' ' + whichOperation + ' ' + currNum;
                     display2.value = newValue;
-                }
-                
+                }              
             }
             else
             {
                 // no prev result is available
-                display1.value = prevNum + ' ' + whichOperation + ' ' + currNum;
-                display2.value = newValue;
+                // expression is a string of various operations
+                if (prevNum != '')
+                {
+                    if (expressions.length === 1 || expressions.length > 1)
+                    {
+                        strExp = display1.value;
+                        display1.value = strExp + newValue;
+                        // display elements from the array 
+                        // and append new value to display updated value
+                    }
+                    else
+                    {
+                        display1.value += newValue;
+                        strExp = display1.value;
+                    }
+                    
+
+                    display2.value = newValue;
+                }
+                else
+                {
+                    display1.value += currNum;
+
+                    display2.value = newValue;
+                }
             }
             
         }
@@ -307,7 +356,7 @@ function updateDisplay (newValue, type)
     }
     if (type === 'result')
     {
-        display2.value = '= ' + newValue;
+        display2.value = 'result = ' + newValue;
     }
     if (type === 'operator')
     {
@@ -318,8 +367,22 @@ function updateDisplay (newValue, type)
             {
                 // if prevNum is null -- this will happen when a second operation is being performed, 
                 // and calculation has been performed on previous two operands.
-                display1.value += ' ' + newValue + ' ';
+                display1.value = result + ' ' + newValue + ' ';
                 display2.value = newValue;
+            }
+            else if (prevNum != '' && result === '')
+            {
+                // we have first operand
+                if (display1.value === '')
+                {
+                    // if display 1 is empty
+                    display1.value = display2.value + ' ' + newValue + ' ';
+                }
+                else
+                {
+                    display1.value += ' ' + newValue + ' ';
+                    display2.value = newValue;
+                }         
             }
             else
             {
