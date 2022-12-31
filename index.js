@@ -17,8 +17,10 @@ let prevOperator        = '';
 let prevScndOp      = '';
 let foundAt         = '';
 let myArray = '';
+let computedVal = '';
 let m = 0;
 let count = 0;
+let index = 0;
 
 // if a number is clicked
 let num = document.getElementsByClassName("number");
@@ -599,34 +601,64 @@ equals.addEventListener("click", function()
         stringOperation = '';
 
         expressions.forEach(element => {
-            stringOperation += element;
+            stringOperation = element;
 
-            element = element.split(" ").join("");
             myArray = stringOperation.split(" ");
 
-            if (myArray.length == 3)
+            // if we have operands and an operator
+/*             if (myArray.length == 3)
             {
-                let index = element.search(operators);
-                let val   = element.substring(index+1);
-            }
+                prevNum         = myArray[1];
+                whichOperation  = myArray[2];
+                currNum         = myArray[3];
+                
+                operate();
+            } */
+            // get index of operator
+            if ((index = myArray.indexOf("+")) != -1)
+            {
+                // addition
 
-            if (myArray.length > 3)
-            {
-                if (myArray[n]==myArray[n+1])
+                // if myArray contains an operator, get one operand before and one after it, 
+                // and calculate them
+                prevNum         = myArray[index - 1];
+                whichOperation  = myArray[index];  // addition operator
+                currNum         = myArray[index + 1];
+
+                operate();
+                
+                if (myArray.length === 3)
                 {
-                    // duplicate elements
-                    let whichVal = myArray[n+1];
-                    myArray.replace(n, whichVal);
-                    myArray.splice(n+1, 1);
+                    myArray = '';
+                    myArray = result;
+                }
+                else
+                {
+                    // else there are other values in array
+                    myArray += result;
+                }
+            }
+            else if ((index = myArray.indexOf("-")) != -1)
+            {
+                // subtraction
+                prevNum         = myArray[index - 1];
+                whichOperation  = myArray[index];  // addition operator
+                currNum         = myArray[index + 1];
+
+                operate();
+                
+                if (myArray.length === 3)
+                {
+                    myArray = '';
+                    myArray = result;
+                }
+                else
+                {
+                    // else there are other values in array
+                    myArray += result;
                 }
             }
             
-        });
-
-        
-        myArray.forEach(elem => {
-            value = parseFloat(elem);
-            total += value;
         });
 
         result = total;
