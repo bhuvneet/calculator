@@ -1,12 +1,11 @@
+
+
 // add event handler to the number buttons clicked.
 let result          = '';
 let prevNum         = '';
 let currNum         = '';
 let isEquals        = false;
 let findOperator    = '';
-let firstOp         = null;
-let secondOp        = null;
-let firstOperation  = null;
 const expressions   = [];
 const mathExp       = [];
 let stringOperation = '';
@@ -15,8 +14,11 @@ let expression      = '';
 let operators       = /[/+x*%-]/;
 let prevOperatorIndex   = '';
 let prevOperator        = '';
-let prevScndOpIndex = '';
 let prevScndOp      = '';
+let foundAt         = '';
+let myArray = '';
+let m = 0;
+let count = 0;
 
 // if a number is clicked
 let num = document.getElementsByClassName("number");
@@ -79,9 +81,7 @@ for (let i = 0; i < num.length; i++)
             
             updateDisplay(currNum, 'currNum');  
         }
-        
     }
-
 })};
 
 document.addEventListener('keydown', (event) =>
@@ -192,8 +192,6 @@ for (let i = 0; i < operation.length; i++)
 let equals = document.getElementById("equals");
 equals.addEventListener("click", function()
 {
-    
-
     // when enter is pressed/clicked, push expression to array
     if (mathExp.length > 1 || mathExp.length === 1)
     {
@@ -211,16 +209,6 @@ equals.addEventListener("click", function()
 
         // extract operands and operators from the string
         stringOperation = stringOperation.split(" ").join("");
-
-        // find first operator
-/*         findOperator = stringOperation.indexOf("/");
-        if (findOperator != -1)
-        {
-            // division operator found
-            // evaluate expression before moving on to others
-            let firstOperand    = stringOperation.indexOf(findOperator - 1);
-            let secondOperand   = stringOperation.indexOf(findOperator + 1);
-        } */
 
         // find operator in array elements, and evaluate the expression based on precedence
         let i = 0;
@@ -264,17 +252,43 @@ equals.addEventListener("click", function()
                 {
                     // find second operand in previous element in array
                     // and replace it with the result calculated
-                    element     = expressions[i - 1];
-                    element     = element.split(" ").join("");
+                    element         = expressions[i - 1];
+                    let element2    = expressions[i + 1];
+                    if (element2 != undefined)
+                    {
+                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
+                        nextScndOp          = element2.substring(0, nxtScndOpIndx);
+                        let newStr2 = element2.replace(nextScndOp, result); 
+                        expressions[i + 1] = newStr2; 
+                    }
 
-                    let splitStr    = [element.slice(0, prevOperatorIndex + 1), result].join('');
-
-                    expressions[i - 1] = splitStr; 
-
+                    let newStr =  element.replace(prevScndOp, result);
+                    
+                    expressions[i - 1] = newStr; 
+                    
+                    foundAt += i + ',';
                 }
             }
             i++;
         });
+
+        myArray = foundAt.split(',');
+        m = 0;
+        count = 0;
+        myArray.forEach(element => {
+            m = parseInt(element);
+            
+            if (element != '')
+            {
+                if (count > 0)
+                {
+                    m -= 1;
+                }
+                expressions.splice(m, 1);
+                count++;
+            }
+        });
+        foundAt = '';   // empty string
 
         // find multiplication
         i = 0;
@@ -284,6 +298,22 @@ equals.addEventListener("click", function()
             element = element.split(" ").join("");
 
             let whichIndex = expressions[i].indexOf('x');
+
+            // keep track of previous second operand and the operator
+            if (whichIndex == -1)
+            {
+                if(operators.test(element))
+                { 
+                    expression = element;
+
+                    prevOperatorIndex   = expression.search(operators);
+
+                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
+                
+                    prevScndOp          = expression.substring(prevOperatorIndex+1);
+                
+                } 
+            }  
 
             if (whichIndex != -1)
             {
@@ -296,9 +326,48 @@ equals.addEventListener("click", function()
                 expressions[i] = result;    // update the element to result of calculation
 
                 console.log("multiplication found");
+
+                if (i > 0)
+                {
+                    // find second operand in previous element in array
+                    // and replace it with the result calculated
+
+                    element         = expressions[i - 1];
+                    let element2    = expressions[i + 1];
+                    if (element2 != undefined)
+                    {
+                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
+                        nextScndOp          = element2.substring(0, nxtScndOpIndx); 
+                        let newStr2         = element2.replace(nextScndOp, result);
+                        expressions[i + 1]  = newStr2;
+                    }
+
+                    let newStr =  element.replace(prevScndOp, result);                    
+                    expressions[i - 1] = newStr; 
+                     
+                    foundAt += i + ',';
+                }
             }
             i++;
         });
+
+        myArray = foundAt.split(',');
+        m = 0;
+        count = 0;
+        myArray.forEach(element => {
+            m = parseInt(element);
+            
+            if (element != '')
+            {
+                if (count > 0)
+                {
+                    m -= 1;
+                }
+                expressions.splice(m, 1);
+                count++;
+            }
+        });
+        foundAt = '';   // empty string
 
         // find modulo
         i = 0;
@@ -308,6 +377,22 @@ equals.addEventListener("click", function()
             element = element.split(" ").join("");
 
             let whichIndex = expressions[i].indexOf('%');
+
+            // keep track of previous second operand and the operator
+            if (whichIndex == -1)
+            {
+                if(operators.test(element))
+                { 
+                    expression = element;
+
+                    prevOperatorIndex   = expression.search(operators);
+
+                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
+                
+                    prevScndOp          = expression.substring(prevOperatorIndex+1);
+                
+                } 
+            }
 
             if (whichIndex != -1)
             {
@@ -320,20 +405,75 @@ equals.addEventListener("click", function()
                 expressions[i] = result;    // update the element to result of calculation
 
                 console.log("modulo found");
+
+                if (i > 0)
+                {
+                    // find second operand in previous element in array
+                    // and replace it with the result calculated
+
+                    element         = expressions[i - 1];
+                    let element2    = expressions[i + 1];
+                    if (element2 != undefined)
+                    {
+                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
+                        nextScndOp          = element2.substring(0, nxtScndOpIndx); 
+                        let newStr2 = element2.replace(nextScndOp, result);
+                        expressions[i + 1] = newStr2;
+                    }
+
+                    let newStr =  element.replace(prevScndOp, result);
+
+                    expressions[i - 1] = newStr; 
+                    foundAt += i + ',';
+                }
             }
             i++;
         });
 
+        myArray = foundAt.split(',');
+        m = 0;
+        count = 0;
+        myArray.forEach(element => {
+            m = parseInt(element);
+            
+            if (element != '')
+            {
+                if (count > 0)
+                {
+                    m -= 1;
+                }
+                expressions.splice(m, 1);
+                count++;
+            }
+        });
+        foundAt = '';   // empty string
+
         // once division, multiplication and modulo have been dealt with
         // find additions and subtractions
         // find multiplication
-        i = 0;
+/*         i = 0;
         expressions.forEach(element => {
 
             // remove spaces from elements first
             element = element.split(" ").join("");
 
             let whichIndex = expressions[i].indexOf('+');
+
+            // keep track of previous second operand and the operator
+            if (whichIndex == -1)
+            {
+                if(operators.test(element))
+                { 
+                    expression = element;
+
+                    prevOperatorIndex   = expression.search(operators);
+
+                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
+                
+                    prevScndOp          = expression.substring(prevOperatorIndex+1);
+                
+                } 
+            }
 
             if (whichIndex != -1)
             {
@@ -346,11 +486,51 @@ equals.addEventListener("click", function()
                 expressions[i] = result;    // update the element to result of calculation
 
                 console.log("addition found");
+
+                if (i > 0)
+                {
+                    // find second operand in previous element in array
+                    // and replace it with the result calculated
+                    element         = expressions[i - 1];
+                    let element2    = expressions[i + 1];
+                    // next element could be end of array
+                    if (element2 != undefined)
+                    {
+                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
+                        nextScndOp          = element2.substring(0, nxtScndOpIndx); 
+                        let newStr2 = element2.replace(nextScndOp, result);
+                        expressions[i + 1] = newStr2;
+                    }
+
+                    let newStr =  element.replace(prevScndOp, result);                   
+                    expressions[i - 1] = newStr; 
+                     
+                    //expressions.splice(i, 1);
+                    foundAt += i + ',';
+                }
             }
             i++;
         });
 
-        // find multiplication
+        myArray = foundAt.split(',');
+        m = 0;
+        count = 0;
+        myArray.forEach(element => {
+            m = parseInt(element);
+            
+            if (element != '')
+            {
+                if (count > 0)
+                {
+                    m -= 1;
+                }
+                expressions.splice(m, 1);
+                count++;
+            }
+        });
+        foundAt = '';   // empty string
+
+        // find subtraction
         i = 0;
         expressions.forEach(element => {
 
@@ -358,6 +538,22 @@ equals.addEventListener("click", function()
             element = element.split(" ").join("");
 
             let whichIndex = expressions[i].indexOf('-');
+
+            // keep track of previous second operand and the operator
+            if (whichIndex == -1)
+            {
+                if(operators.test(element))
+                { 
+                    expression = element;
+
+                    prevOperatorIndex   = expression.search(operators);
+
+                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
+                
+                    prevScndOp          = expression.substring(prevOperatorIndex+1);
+                
+                } 
+            }
 
             if (whichIndex != -1)
             {
@@ -370,15 +566,76 @@ equals.addEventListener("click", function()
                 expressions[i] = result;    // update the element to result of calculation
 
                 console.log("subtraction found");
+
+                if (i > 0)
+                {
+                    // find second operand in previous element in array
+                    // and replace it with the result calculated
+
+                    element         = expressions[i - 1];
+                    let element2    = expressions[i + 1];
+                    if (element2 != undefined)
+                    {
+                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
+                        nextScndOp          = element2.substring(0, nxtScndOpIndx); 
+                        let newStr2 = element2.replace(nextScndOp, result);
+                        expressions[i + 1] = newStr2;
+                    }
+
+                    let newStr =  element.replace(prevScndOp, result);
+                    
+                    expressions[i - 1] = newStr; 
+                    
+                    foundAt += i + ',';  
+                }
             }
             i++;
+        }); */
+
+        // remove space in elements of expressions
+        let total = 0;
+        let value = 0;
+        let n = 2;
+        stringOperation = '';
+
+        expressions.forEach(element => {
+            stringOperation += element;
+
+            element = element.split(" ").join("");
+            myArray = stringOperation.split(" ");
+
+            if (myArray.length == 3)
+            {
+                let index = element.search(operators);
+                let val   = element.substring(index+1);
+            }
+
+            if (myArray.length > 3)
+            {
+                if (myArray[n]==myArray[n+1])
+                {
+                    // duplicate elements
+                    let whichVal = myArray[n+1];
+                    myArray.replace(n, whichVal);
+                    myArray.splice(n+1, 1);
+                }
+            }
+            
         });
 
+        
+        myArray.forEach(elem => {
+            value = parseFloat(elem);
+            total += value;
+        });
+
+        result = total;
     }
 
     isEquals = true;
     // display result after this
 }); 
+
 
 // store 1st num when user presses operator
 // save which operation
@@ -483,7 +740,6 @@ function mod (prevNum, currNum)
 let display1 = document.getElementById("display1");
 let display2 = document.getElementById("display2");
 
-let prevValue = document.getElementById("display1");
 
 function updateDisplay (newValue, type)
 {
