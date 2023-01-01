@@ -17,7 +17,7 @@ let prevOperator        = '';
 let prevScndOp      = '';
 let foundAt         = '';
 let myArray = '';
-let computedVal = '';
+let computedVal = [];
 let m = 0;
 let count = 0;
 let index = 0;
@@ -154,7 +154,10 @@ for (let i = 0; i < operation.length; i++)
     {
         if (prevNum != '' && currNum != '' && whichOperation != '')
         {
-            // for displaying purposes
+            operate();
+            prevNum = result;
+
+/*             // for displaying purposes
             if (mathExp.length < 1)
             {
                 // if there no entry in the array, 
@@ -178,7 +181,7 @@ for (let i = 0; i < operation.length; i++)
                             + currNum;
 
             // for mathematical operation
-            expressions.push(expression);
+            expressions.push(expression); */
 
             prevNum = currNum;
             currNum = '';
@@ -194,7 +197,11 @@ for (let i = 0; i < operation.length; i++)
 let equals = document.getElementById("equals");
 equals.addEventListener("click", function()
 {
-    // when enter is pressed/clicked, push expression to array
+    if (prevNum != '' && currNum != '' && whichOperation != '')
+    {
+        operate();
+    }
+/*     // when enter is pressed/clicked, push expression to array
     if (mathExp.length > 1 || mathExp.length === 1)
     {
         expression = prevNum + ' ' + whichOperation + ' ' + currNum;
@@ -450,193 +457,35 @@ equals.addEventListener("click", function()
         });
         foundAt = '';   // empty string
 
-        // once division, multiplication and modulo have been dealt with
-        // find additions and subtractions
-        // find multiplication
-/*         i = 0;
-        expressions.forEach(element => {
-
-            // remove spaces from elements first
-            element = element.split(" ").join("");
-
-            let whichIndex = expressions[i].indexOf('+');
-
-            // keep track of previous second operand and the operator
-            if (whichIndex == -1)
-            {
-                if(operators.test(element))
-                { 
-                    expression = element;
-
-                    prevOperatorIndex   = expression.search(operators);
-
-                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
-                
-                    prevScndOp          = expression.substring(prevOperatorIndex+1);
-                
-                } 
-            }
-
-            if (whichIndex != -1)
-            {
-                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
-                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
-                whichOperation = element.substring(whichIndex-1, whichIndex);
-
-                operate();
-                
-                expressions[i] = result;    // update the element to result of calculation
-
-                console.log("addition found");
-
-                if (i > 0)
-                {
-                    // find second operand in previous element in array
-                    // and replace it with the result calculated
-                    element         = expressions[i - 1];
-                    let element2    = expressions[i + 1];
-                    // next element could be end of array
-                    if (element2 != undefined)
-                    {
-                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
-                        nextScndOp          = element2.substring(0, nxtScndOpIndx); 
-                        let newStr2 = element2.replace(nextScndOp, result);
-                        expressions[i + 1] = newStr2;
-                    }
-
-                    let newStr =  element.replace(prevScndOp, result);                   
-                    expressions[i - 1] = newStr; 
-                     
-                    //expressions.splice(i, 1);
-                    foundAt += i + ',';
-                }
-            }
-            i++;
-        });
-
-        myArray = foundAt.split(',');
-        m = 0;
-        count = 0;
-        myArray.forEach(element => {
-            m = parseInt(element);
-            
-            if (element != '')
-            {
-                if (count > 0)
-                {
-                    m -= 1;
-                }
-                expressions.splice(m, 1);
-                count++;
-            }
-        });
-        foundAt = '';   // empty string
-
-        // find subtraction
-        i = 0;
-        expressions.forEach(element => {
-
-            // remove spaces from elements first
-            element = element.split(" ").join("");
-
-            let whichIndex = expressions[i].indexOf('-');
-
-            // keep track of previous second operand and the operator
-            if (whichIndex == -1)
-            {
-                if(operators.test(element))
-                { 
-                    expression = element;
-
-                    prevOperatorIndex   = expression.search(operators);
-
-                    prevOperator        = expression.substring(prevOperatorIndex, prevOperatorIndex + 1);
-                
-                    prevScndOp          = expression.substring(prevOperatorIndex+1);
-                
-                } 
-            }
-
-            if (whichIndex != -1)
-            {
-                prevNum = element.substring(0, whichIndex - 1);  // extract 1st op until division operator
-                currNum = element.substring(whichIndex);    // extract 2nd op from division op until end of string
-                whichOperation = element.substring(whichIndex-1, whichIndex);
-
-                operate();
-                
-                expressions[i] = result;    // update the element to result of calculation
-
-                console.log("subtraction found");
-
-                if (i > 0)
-                {
-                    // find second operand in previous element in array
-                    // and replace it with the result calculated
-
-                    element         = expressions[i - 1];
-                    let element2    = expressions[i + 1];
-                    if (element2 != undefined)
-                    {
-                        let nxtScndOpIndx   = element2.split(" ").join("").search(operators);
-                        nextScndOp          = element2.substring(0, nxtScndOpIndx); 
-                        let newStr2 = element2.replace(nextScndOp, result);
-                        expressions[i + 1] = newStr2;
-                    }
-
-                    let newStr =  element.replace(prevScndOp, result);
-                    
-                    expressions[i - 1] = newStr; 
-                    
-                    foundAt += i + ',';  
-                }
-            }
-            i++;
-        }); */
-
+        // for addition and subtraction
         // remove space in elements of expressions
         let total = 0;
-        let value = 0;
-        let n = 2;
+        foundAt = 0;
+        let n = 0;
         stringOperation = '';
+        let calculation = 0;
 
+        
         expressions.forEach(element => {
             stringOperation = element;
 
             myArray = stringOperation.split(" ");
 
-            // if we have operands and an operator
-/*             if (myArray.length == 3)
-            {
-                prevNum         = myArray[1];
-                whichOperation  = myArray[2];
-                currNum         = myArray[3];
-                
-                operate();
-            } */
-            // get index of operator
+            // if element remaining in expressions has a + operator
             if ((index = myArray.indexOf("+")) != -1)
             {
                 // addition
 
-                // if myArray contains an operator, get one operand before and one after it, 
+                // if myArray contains a + operator, get one operand before and one after it, 
                 // and calculate them
                 prevNum         = myArray[index - 1];
                 whichOperation  = myArray[index];  // addition operator
                 currNum         = myArray[index + 1];
 
                 operate();
-                
-                if (myArray.length === 3)
-                {
-                    myArray = '';
-                    myArray = result;
-                }
-                else
-                {
-                    // else there are other values in array
-                    myArray += result;
-                }
+
+                computedVal[n] = result;
+                count++;
             }
             else if ((index = myArray.indexOf("-")) != -1)
             {
@@ -646,26 +495,138 @@ equals.addEventListener("click", function()
                 currNum         = myArray[index + 1];
 
                 operate();
-                
-                if (myArray.length === 3)
+
+                computedVal[n] = result;
+                count++;
+            }
+            else
+            {
+                computedVal[n] = element;
+            }
+            n++;
+        });
+
+        n = 0;
+        myArray = '';
+
+        // no more operators in expressions array anymore
+        // if computed value array has a negative
+        computedVal.forEach(element => {
+            if (computedVal.length === 1)
+            {
+                result = computedVal[n];
+            }
+            else
+            {
+                if ((index = computedVal[n].indexOf("-")) != -1)
                 {
-                    myArray = '';
-                    myArray = result;
+                    prevNum         = element;  // this number is negative
+                    
+                    let element2 = computedVal[n + 1];
+
+                    if (element2 != undefined)
+                    {
+                        // there is a next element available
+                        if ((index = computedVal[n + 1].indexOf("-")) != -1)
+                        {
+                            // this number is positive
+                            whichOperation  = "+";  // addition operator
+                            currNum         = computedVal[n + 1];
+
+                            operate();
+                            computedVal[n + 1] = result;
+                            calculation += parseFloat(result);
+                        }
+                        else
+                        {
+                            // this value is negative too
+                            whichOperation  = "+";  // addition operator
+                            currNum         = computedVal[n + 1];
+
+                            operate();
+                            computedVal[n + 1] = result;
+                            calculation += parseFloat(result);
+                        }
+                    }
+                    else
+                    {
+                        // this is the only or last value in array
+                        if (computedVal.length > 1)
+                        {
+                            result = calculation;
+                        }
+                        else
+                        {
+                            calculation += parseFloat(computedVal[n]);
+                            result = calculation;
+                        }
+                        
+                    }
                 }
                 else
                 {
-                    // else there are other values in array
-                    myArray += result;
+                    // no negative value
+                    // then value must be positive
+                    prevNum         = element;  // this is positive
+                    
+                    let element2 = computedVal[n + 1];
+
+                    if (element2 != undefined)
+                    {
+                        // there is a next element available
+                        if ((index = computedVal[n + 1].indexOf("-")) != -1)
+                        {
+                            // this number is negative too
+                            whichOperation  = "+";  // addition operator as it will perform subtraction when operators are + and -
+                            currNum         = computedVal[n + 1];
+
+                            operate();
+                            computedVal[n + 1] = result;
+                            calculation += parseFloat(result);
+                        }
+                        else
+                        {
+                            // this value is positive
+                            whichOperation  = "+";  // addition operator
+                            currNum         = computedVal[n + 1];
+
+                            operate();
+                            computedVal[n + 1] = result;
+                            calculation += parseFloat(result);
+                        }
+                    }
+                    else
+                    {
+                        // this is the only or last value in array
+                        if (computedVal.length > 1)
+                        {
+                            result = calculation;
+                        }
+                        else
+                        {
+                            calculation += parseFloat(computedVal[n]);
+                            result = calculation;
+                        }
+                    }
+
                 }
+                n++;
             }
             
-        });
-
-        result = total;
+        });     
     }
+    if (expressions.length === 0 && prevNum != '' && currNum != '' && whichOperation != '')
+    {
+        operate();
+    }
+    else if (expressions.length === 0 && prevNum == '' && currNum != '' && whichOperation != '')
+    {
+        result = whichOperation + currNum;
+    } */
 
     isEquals = true;
     // display result after this
+    updateDisplay(result, 'result');
 }); 
 
 
