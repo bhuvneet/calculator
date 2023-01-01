@@ -230,6 +230,11 @@ equals.addEventListener("click", function()
         }
         operate();
     }
+    else if (prevNum != '' && (whichOperation === '' || whichOperation === 0) && currNum == '')
+    {
+        // first operand is entered, while operator and second operand are empty
+        result = prevNum;
+    }
 
     isEquals = true;
     // display result after this
@@ -511,6 +516,7 @@ undo.addEventListener("click", () =>
     currNum = '';
     prevNum = '';
     result = '';
+    whichOperation = '';
     isCalculated = false;
     isEquals = false;
 })
@@ -524,13 +530,14 @@ clear.addEventListener("click", () =>
     valueInDisplay.value = valueInDisplay.value.slice(0, -1);
     this.value = valueInDisplay.value;
     
-    if (currNum === '' && whichOperation === 0) // update first operand
+    if (currNum === '' && (whichOperation === 0 || whichOperation != '')) // update first operand
     {
         prevNum = this.value;
     }
     else if (currNum != '' && whichOperation != '')  // update second operand
     {
         currNum = this.value;
+        updateDisplay(currNum, "currNum");
     }
     else if (prevNum != '' && whichOperation != '' && currNum == '')
     {
