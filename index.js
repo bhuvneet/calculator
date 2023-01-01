@@ -112,7 +112,81 @@ document.addEventListener('keydown', (event) =>
     
     if (isFinite(keyName) || keyName === ".") // number id pressed
     {
+        isCalculated = false;
         if (result === '') // if there's no prior calculation done
+        {
+            isEquals = false;
+
+            if (whichOperation != 0) // operator is clicked; don't append to prevNum
+            {   
+                // second operand
+                if (keyName === "." && currNum.includes(".")) // return if number already has a decimal.
+                {
+                    return;
+                }
+                else
+                {
+                    // we don't have any result
+                    // this is second operand
+                    currNum += keyName;
+                    updateDisplay(currNum, 'currNum'); 
+                }  
+            }
+            else
+            {   // first operand
+                if (keyName === "." && prevNum.includes(".")) // return if number already has a decimal.
+                {
+                    return;
+                }
+                else
+                {
+                    prevNum += keyName;  // keep appending to prevNum
+                    updateDisplay(prevNum, 'prevNum');
+                }
+            }
+        }
+        else    // we have a result from prior calculation
+        {
+            isEquals = false;
+            if (keyName === "." && currNum.includes(".")) // return if number already has a decimal.
+            {
+                return;
+            }
+
+            if (isCalculated === true)
+            {
+                // we have compued result of an expression
+                // so start this expression from the beginning
+                // by erasing all previous values
+                result = '';
+                isCalculated = false;
+
+                if (prevNum === '')
+                {
+                    prevNum += keyName;
+                    updateDisplay(prevNum, 'prevNum');
+                }
+                else
+                {
+                    currNum += keyName;
+                    updateDisplay(currNum, 'currNum'); 
+                }
+            }
+            else
+            {   
+                // isCalculated is false
+                // when user has entered a number, an operator and another number
+                // this is the second oparand
+                if (prevNum === '')
+                {
+                    prevNum = result;   // assign result to prevNum
+                }
+                currNum += keyName;
+                
+                updateDisplay(currNum, 'currNum');  
+            }
+        }
+        /* if (result === '') // if there's no prior calculation done
         {
             if (keyName === "." && currNum.includes(".")) // return if number already has a decimal.
             {
@@ -143,19 +217,41 @@ document.addEventListener('keydown', (event) =>
                 currNum += keyName;
                 updateDisplay(currNum, 'currNum');  
             }
-        }
+        } */
     }
 
     else if (keyName === "+" || keyName === "-" || keyName === "/" 
     || keyName === "*" || keyName === "%") // operation is pressed
     {
+        /* whichOperation = keyName;
+        updateDisplay(whichOperation, 'operator'); */
+        
+        if (prevNum != '' && currNum != '' && whichOperation != '')
+        {
+            operate();
+            prevNum = result;
+            currNum = '';
+        }
+        if (whichOperation == '')
+        {
+            // replace operation with new value
+            whichOperation = keyName;
+        }
+
+        if (isCalculated)
+        {
+            prevNum = result;
+        }
+
         whichOperation = keyName;
-        updateDisplay(whichOperation, 'operator');
+        updateDisplay(whichOperation, 'operator');  // display operator
+
     }
 
     else if (keyName === "=" || keyName === "Enter")
     {
         isEquals = true;
+        isCalculated = true;
         operate();      
     }
 
@@ -295,7 +391,12 @@ function operate ()
 function add (prevNum, currNum)
 {
     result = +prevNum + +currNum;
-    result = (Math.round(result * 10000) / 10000).toFixed(4);
+    if (result % 1 != 0)
+    {
+        // has decimal places
+        result = (Math.round(result * 10000) / 10000).toFixed(4);
+    }
+    
     // display result only when equals to is clicked/pressed
     if (isEquals)
     {
@@ -306,7 +407,12 @@ function add (prevNum, currNum)
 function subtract (prevNum, currNum)
 {
     result = +prevNum - +currNum;
-    result = (Math.round(result * 10000) / 10000).toFixed(4);
+    if (result % 1 != 0)
+    {
+        // has decimal places
+        result = (Math.round(result * 10000) / 10000).toFixed(4);
+    }
+
     if (isEquals)
     {
         updateDisplay(result, 'result');
@@ -316,7 +422,12 @@ function subtract (prevNum, currNum)
 function divide (prevNum, currNum)
 {
     result = +prevNum / +currNum;
-    result = (Math.round(result * 10000) / 10000).toFixed(4);
+    if (result % 1 != 0)
+    {
+        // has decimal places
+        result = (Math.round(result * 10000) / 10000).toFixed(4);
+    }
+
     if (isEquals)
     {
         updateDisplay(result, 'result');
@@ -326,7 +437,12 @@ function divide (prevNum, currNum)
 function multiply (prevNum, currNum)
 {
     result = +prevNum * +currNum;
-    result = (Math.round(result * 10000) / 10000).toFixed(4);
+    if (result % 1 != 0)
+    {
+        // has decimal places
+        result = (Math.round(result * 10000) / 10000).toFixed(4);
+    }
+
     if (isEquals)
     {
         updateDisplay(result, 'result');
@@ -336,7 +452,12 @@ function multiply (prevNum, currNum)
 function mod (prevNum, currNum)
 {
     result = ((+prevNum) % (+currNum));
-    result = (Math.round(result * 10000) / 10000).toFixed(4);
+    if (result % 1 != 0)
+    {
+        // has decimal places
+        result = (Math.round(result * 10000) / 10000).toFixed(4);
+    }
+    
     if (isEquals)
     {
         updateDisplay(result, 'result');
@@ -485,12 +606,13 @@ function updateDisplay (newValue, type)
             {
                 if (isCalculated)
                 {
+                    // when equals to is clicked /pressed
                     display1.value = prevNum + ' ' + newValue;
                     display2.value = newValue;
                 }
                 else
                 {
-                    display1.value = display2.value + ' ' + newValue + ' ';
+                    display1.value = prevNum + ' ' + whichOperation + ' ';
                     display2.value = newValue;
                 }
             }
