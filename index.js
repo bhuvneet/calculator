@@ -745,7 +745,7 @@ clear.addEventListener("click", () =>
     valueInDisplay.value = valueInDisplay.value.slice(0, -1);
     this.value = valueInDisplay.value;
     
-    if (currNum === '' && (whichOperation === 0 || whichOperation != '')) // update first operand
+    if (currNum === '' && (whichOperation == 0 || whichOperation == '') && isCalculated != true) // update first operand
     {
         prevNum = this.value;
     }
@@ -757,8 +757,9 @@ clear.addEventListener("click", () =>
     else if (prevNum != '' && whichOperation != '' && currNum == '')
     {
         whichOperation = this.value;
+        updateDisplay(whichOperation, "operator");
     }
-    else if (isCalculated == true)
+    else if (isCalculated)
     {
         result = result.slice(0, -1);
     }
