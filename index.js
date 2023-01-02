@@ -99,7 +99,16 @@ for (let i = 0; i < num.length; i++)
             {
                 prevNum = result;   // assign result to prevNum
             }
-            currNum += num[i].textContent;
+            if (whichOperation === '')
+            {
+                prevNum += num[i].textContent;
+                updateDisplay(prevNum, 'prevNum'); 
+            }
+            else
+            {
+                currNum += num[i].textContent;
+                updateDisplay(currNum, 'currNum'); 
+            }
             
             updateDisplay(currNum, 'currNum');  
         }
@@ -228,11 +237,15 @@ document.addEventListener('keydown', (event) =>
         
         if (prevNum != '' && currNum != '' && whichOperation != '')
         {
+            if (keyName === "%")
+            {
+                currNum = currNum / 100;
+            }
             operate();
             prevNum = result;
             currNum = '';
         }
-        if (whichOperation == '')
+        if (whichOperation == '' && keyName != "%")
         {
             // replace operation with new value
             whichOperation = keyName;
@@ -250,6 +263,41 @@ document.addEventListener('keydown', (event) =>
 
     else if (keyName === "=" || keyName === "Enter")
     {
+        if (prevNum != '' && whichOperation != '' && whichOperation === "%")
+        {
+            operate();
+        }
+        else if (prevNum == '' && currNum != '' && whichOperation != '' )
+        {
+            // prevNum is empty and currNum and operator have value
+            if (whichOperation == "+" || whichOperation == "-")
+            {
+                prevNum = 0;
+            }
+            else
+            {
+                prevNum = 1;
+            }
+                operate();
+        }
+        else if (prevNum != '' && whichOperation != '' && currNum == '')
+        {
+            if (whichOperation == "+" || whichOperation == "-")
+            {
+                currNum = 0;
+            }
+            else
+            {
+                currNum = 1;
+            }
+            operate();
+        }
+        else if (prevNum != '' && (whichOperation === '' || whichOperation === 0) && currNum == '')
+        {
+            // first operand is entered, while operator and second operand are empty
+            result = prevNum;
+        }
+
         isEquals = true;
         isCalculated = true;
         operate();      
@@ -268,28 +316,67 @@ for (let i = 0; i < operation.length; i++)
 {
     operation[i].addEventListener("click", () =>
     {
-        if (whichOperation != 0)
+        if (prevNum != '' && currNum != '' && whichOperation != '')
+        {
+            if (operation[i].textContent === "%")
+            {
+                currNum = currNum / 100;
+            }
+            operate();
+            prevNum = result;
+        }
+        if (prevNum != '' && currNum == '' && operation[i].textContent == "%" 
+        && (whichOperation === 0 || whichOperation === '' && result === ''))
+        {
+            // calculate percentage first
+            whichOperation = operation[i].textContent;
+            operate();
+
+        }
+        if ((whichOperation != '' || whichOperation != 0) && operation[i].textContent != "%")
         {
             // replace operation with new value
             whichOperation = operation[i].textContent;
         }
-        if (prevNum != '' && currNum != '' && whichOperation != '')
+        if(whichOperation === 0 && operation[i].textContent != "%")
         {
-            operate();
-            prevNum = result;
-
-            prevNum = currNum;
-            currNum = '';
-
+            // replace operation with new value 
+            // when this the first operation
+            whichOperation = operation[i].textContent;
         }
-
         if (isCalculated)
         {
             prevNum = result;
         }
+        if (prevNum != '' && currNum == '' && operation[i].textContent != "%" 
+        && (whichOperation === 0 || whichOperation === '' && result != ''))
+        {
+            // result has been computed
+            // assign new operator
+            whichOperation = operation[i].textContent;
+        }
+        if (prevNum != '' && currNum == ''
+        && (whichOperation === 0 || whichOperation === '') && result === '')
+        {
+            // after undo
+            if (operation[i].textContent === "%")
+            {
+                currNum = currNum / 100;
+                operate();
+                prevNum = result;
+            }
+            else
+            {
+                whichOperation = operation[i].textContent;
+            } 
+        }
+        if (prevNum === '' && currNum === ''
+        && whichOperation === '' && result != '')
+        {
+            whichOperation = operation[i].textContent;
+        }
 
-        whichOperation = operation[i].textContent;
-        updateDisplay(whichOperation, 'operator');  // display operator
+        updateDisplay(operation[i].textContent, 'operator');  // display operator
     })
 }
 
@@ -298,6 +385,10 @@ let equals = document.getElementById("equals");
 equals.addEventListener("click", function()
 {
     if (prevNum != '' && currNum != '' && whichOperation != '')
+    {
+        operate();
+    }
+    else if (prevNum != '' && whichOperation != '' && whichOperation === "%")
     {
         operate();
     }
@@ -378,7 +469,7 @@ function operate ()
         }
         else if (whichOperation === "%")
         {
-            mod(prevNum, currNum);
+            percentage(prevNum, currNum);
         }
 
         prevNum = '';
@@ -394,7 +485,7 @@ function add (prevNum, currNum)
     if (result % 1 != 0)
     {
         // has decimal places
-        result = (Math.round(result * 10000) / 10000).toFixed(4);
+        result = (Math.round(result * 100) / 100).toFixed(2);
     }
     
     // display result only when equals to is clicked/pressed
@@ -410,7 +501,7 @@ function subtract (prevNum, currNum)
     if (result % 1 != 0)
     {
         // has decimal places
-        result = (Math.round(result * 10000) / 10000).toFixed(4);
+        result = (Math.round(result * 100) / 100).toFixed(2);
     }
 
     if (isEquals)
@@ -425,12 +516,12 @@ function divide (prevNum, currNum)
     if (result % 1 != 0)
     {
         // has decimal places
-        result = (Math.round(result * 10000) / 10000).toFixed(4);
+        result = (Math.round(result * 100) / 100).toFixed(2);
     }
 
     if (isEquals)
     {
-        updateDisplay(result, 'result');
+        updateDisplay(result, 'result');;
     } 
 };
 
@@ -440,7 +531,7 @@ function multiply (prevNum, currNum)
     if (result % 1 != 0)
     {
         // has decimal places
-        result = (Math.round(result * 10000) / 10000).toFixed(4);
+        result = (Math.round(result * 100) / 100).toFixed(2);
     }
 
     if (isEquals)
@@ -449,15 +540,23 @@ function multiply (prevNum, currNum)
     } 
 };
 
-function mod (prevNum, currNum)
+function percentage (prevNum, currNum)
 {
-    result = ((+prevNum) % (+currNum));
+    
+    if (currNum === '')
+    {
+        result = (prevNum / 100);
+    }
+    else
+    {
+        result = ((+prevNum) % (+currNum));
+    }
     if (result % 1 != 0)
     {
         // has decimal places
-        result = (Math.round(result * 10000) / 10000).toFixed(4);
+        result = (Math.round(result * 100) / 100).toFixed(2);
     }
-    
+
     if (isEquals)
     {
         updateDisplay(result, 'result');
@@ -509,34 +608,11 @@ function updateDisplay (newValue, type)
                 // expression is a string of various operations
                 if (prevNum != '')
                 {
-                    if (mathExp.length === 1 || mathExp.length > 1)
-                    {   
-                        // display elements from the array 
-                        // and append new value to display updated value
-                        if (expressions.length > 1)
-                        {
-                            mathExp.forEach(elem => strExp += elem);
-                            display1.value = strExp + ' ' + whichOperation + ' ' 
-                            + newValue;
-                            strExp = '';    // empty the string again for next time
-                        }
-                        else
-                        {
-                            // for first complete operation
-                            expressions.forEach(elem => strExp += elem);
-                            display1.value = strExp + ' ' + whichOperation + ' ' 
-                            + newValue;
-                            strExp = '';    // empty the string again for next time
-                        }
-                    }
-                    else
-                    {
-                        display1.value = prevNum + ' ' 
-                            + whichOperation + ' '
-                            + currNum;
-                    }
-                    
 
+                    display1.value = prevNum + ' ' 
+                        + whichOperation + ' '
+                        + currNum;
+                    
                     display2.value = newValue;
                 }
                 else
@@ -572,12 +648,22 @@ function updateDisplay (newValue, type)
             {
                 // if prevNum is null -- this will happen when a second operation is being performed, 
                 // and calculation has been performed on previous two operands.
-                display1.value = result + ' ' + newValue + ' ';
-                display2.value = newValue;
+                if (newValue === "%")
+                {
+                    display1.value = result;
+                    display2.value = result;
+                }
+                else
+                {
+                    display1.value = result + ' ' + newValue + ' ';
+                    display2.value = newValue;
+                }
+                
             }
             else if (prevNum != '' && result === '')
             {
                 // we have first operand
+                // after undo or first calc
                 if (display1.value === '')
                 {
                     // if display 1 is empty
@@ -588,7 +674,6 @@ function updateDisplay (newValue, type)
                 {
                     if (operators.test(display1.value))
                     {
-                        console.log("found");
                         let str = display1.value;
                         let position = str.search(operators);
                         let newStr = str.slice(0, position);
@@ -612,8 +697,16 @@ function updateDisplay (newValue, type)
                 }
                 else
                 {
-                    display1.value = prevNum + ' ' + whichOperation + ' ';
-                    display2.value = newValue;
+                    if (newValue === "%")
+                    {
+                        display1.value = prevNum;
+                        display2.value = '';
+                    }
+                    else
+                    {
+                        display1.value = prevNum + ' ' + whichOperation + ' ';
+                        display2.value = newValue;
+                    }  
                 }
             }
             
